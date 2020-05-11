@@ -141,7 +141,7 @@ class ConnectivityTest {
         val connectivityOne = Connectivity()
         val connectivityTwo = Connectivity()
         // when
-        val objectsAreEqual = connectivityOne.equals(connectivityTwo)
+        val objectsAreEqual = connectivityOne == connectivityTwo
         // then
         Truth.assertThat(objectsAreEqual).isTrue()
     }

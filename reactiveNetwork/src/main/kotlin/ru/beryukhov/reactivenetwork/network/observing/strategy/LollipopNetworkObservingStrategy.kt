@@ -21,40 +21,28 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 @TargetApi(21)
 class LollipopNetworkObservingStrategy : NetworkObservingStrategy {
     // it has to be initialized in the Observable due to Context
-    private var networkCallback: NetworkCallback? = null
+    private lateinit var networkCallback: NetworkCallback
 
     @ExperimentalCoroutinesApi
     override fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val service = Context.CONNECTIVITY_SERVICE
         val manager = context.getSystemService(service) as ConnectivityManager
-        return callbackFlow<Connectivity> {
-                networkCallback = object : NetworkCallback() {
-                    override fun onAvailable(network: Network) {
-                        offer(Connectivity.create(context))
-                    }
-
-                    override fun onLost(network: Network) {
-                        offer(Connectivity.create(context))
-                    }
+        return callbackFlow {
+            networkCallback = object : NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    offer(Connectivity.create(context))
                 }
 
-                val networkRequest = NetworkRequest.Builder().build()
-                manager.registerNetworkCallback(networkRequest, networkCallback)
+                override fun onLost(network: Network) {
+                    offer(Connectivity.create(context))
+                }
+            }
 
-                awaitClose { tryToUnregisterCallback(manager) }
-            }.onStart{ emit(Connectivity.create(context)) }.distinctUntilChanged()
-        /*return Observable.create(object : ObservableOnSubscribe<Connectivity?>() {
-            @Throws(Exception::class)
-            fun subscribe(subscriber: ObservableEmitter<Connectivity>) {
-                networkCallback = createNetworkCallback(subscriber, context)
-                val networkRequest = NetworkRequest.Builder().build()
-                manager.registerNetworkCallback(networkRequest, networkCallback)
-            }
-        }).doOnDispose(object : Action() {
-            fun run() {
-                tryToUnregisterCallback(manager)
-            }
-        }).startWith(Connectivity.create(context)).distinctUntilChanged()*/
+            val networkRequest = NetworkRequest.Builder().build()
+            manager.registerNetworkCallback(networkRequest, networkCallback)
+
+            awaitClose { tryToUnregisterCallback(manager) }
+        }.onStart { emit(Connectivity.create(context)) }.distinctUntilChanged()
     }
 
     private fun tryToUnregisterCallback(manager: ConnectivityManager) {

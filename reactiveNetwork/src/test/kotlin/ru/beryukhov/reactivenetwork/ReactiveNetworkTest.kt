@@ -16,7 +16,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import ru.beryukhov.reactivenetwork.ReactiveNetwork.Companion.create
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingSettings.Companion.builder
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
 import ru.beryukhov.reactivenetwork.internet.observing.error.DefaultErrorHandler

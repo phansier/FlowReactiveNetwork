@@ -32,7 +32,8 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     // it has to be initialized in the Observable due to Context
     private lateinit var networkCallback: NetworkCallback
-    private val connectivitySubject: BroadcastChannel<Connectivity> = BroadcastChannel(Channel.CONFLATED)
+    private val connectivitySubject: BroadcastChannel<Connectivity> =
+        BroadcastChannel(Channel.CONFLATED)
     private val idleReceiver: BroadcastReceiver = createIdleBroadcastReceiver()
     private var lastConnectivity = Connectivity()
 
@@ -59,36 +60,12 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
         }.flatMapConcat { connectivity ->
             propagateAnyConnectedState(lastConnectivity, connectivity)
         }.onStart { emit(Connectivity.create(context)) }.distinctUntilChanged()
-
-            /*.toFlowable(BackpressureStrategy.LATEST)
-            .doOnCancel(object : Action() {
-                fun run() {
-                    tryToUnregisterCallback(manager)
-                    tryToUnregisterReceiver(context)
-                }
-            })
-            .doAfterNext(object : Consumer<Connectivity?>() {
-                fun accept(connectivity: Connectivity?) {
-                    lastConnectivity = connectivity
-                }
-            })*/
-            /*.flatMap(object : Function<Connectivity?, Publisher<Connectivity?>?>() {
-                fun apply(connectivity: Connectivity?): Publisher<Connectivity?>? {
-                    val typeChanged = lastConnectivity!!.type() != connectivity!!.type()
-                    val wasConnected = lastConnectivity.state() == NetworkInfo.State.CONNECTED
-                    val isDisconnected = connectivity.state() == NetworkInfo.State.DISCONNECTED
-                    val isNotIdle = connectivity.detailedState() != NetworkInfo.DetailedState.IDLE
-                    return if (typeChanged && wasConnected && isDisconnected && isNotIdle) {
-                        Flowable.fromArray(connectivity, lastConnectivity)
-                    } else {
-                        Flowable.fromArray(connectivity)
-                    }
-                }
-            })*/
-
     }
 
-    internal fun propagateAnyConnectedState(last: Connectivity, current: Connectivity): Flow<Connectivity> {
+    internal fun propagateAnyConnectedState(
+        last: Connectivity,
+        current: Connectivity
+    ): Flow<Connectivity> {
         val typeChanged = last.type != current.type
         val wasConnected = last.state == NetworkInfo.State.CONNECTED
         val isDisconnected = current.state == NetworkInfo.State.DISCONNECTED
@@ -100,7 +77,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
         }
     }
 
-    protected fun registerIdleReceiver(context: Context?) {
+    private fun registerIdleReceiver(context: Context?) {
         val filter = IntentFilter(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
         context!!.registerReceiver(idleReceiver, filter)
     }
@@ -170,7 +147,8 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     }
 
     companion object {
-        internal const val ERROR_MSG_NETWORK_CALLBACK: String = "could not unregister network callback"
+        internal const val ERROR_MSG_NETWORK_CALLBACK: String =
+            "could not unregister network callback"
         internal const val ERROR_MSG_RECEIVER: String = "could not unregister receiver"
     }
 }

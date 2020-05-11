@@ -15,7 +15,7 @@ import ru.beryukhov.reactivenetwork.network.observing.strategy.PreLollipopNetwor
 /**
  * ReactiveNetwork is an Android library
  * listening network connection state and change of the WiFi signal strength
- * with Coroutines Flow. It was backported from ReactiveNewtwork with Java and RxJava inside.
+ * with Coroutines Flow. It was backported from ReactiveNetwork with Java and RxJava inside.
  */
 class ReactiveNetwork {
     /**
@@ -143,7 +143,7 @@ class ReactiveNetwork {
      */
     @RequiresPermission(Manifest.permission.INTERNET)
     suspend fun checkInternetConnectivity(): Boolean {
-        val settings = InternetObservingSettings.create();
+        val settings = InternetObservingSettings.create()
         return checkInternetConnectivity(
             settings.strategy(), settings.host(), settings.port(),
             settings.timeout(), settings.httpResponse(), settings.errorHandler()
@@ -184,7 +184,7 @@ class ReactiveNetwork {
         host: String, port: Int, timeoutInMs: Int, httpResponse: Int,
         errorHandler: ErrorHandler
     ): Boolean {
-        checkStrategyIsNotNull(strategy);
+        checkStrategyIsNotNull(strategy)
         return strategy.checkInternetConnectivity(
             host,
             port,
@@ -200,13 +200,5 @@ class ReactiveNetwork {
 
     companion object {
         const val LOG_TAG = "ReactiveNetwork"
-        /**
-         * Creates a new instance of the ReactiveNetwork class
-         *
-         * @return ReactiveNetwork object
-         */
-        fun create(): ReactiveNetwork {
-            return ReactiveNetwork()
-        }
     }
 }

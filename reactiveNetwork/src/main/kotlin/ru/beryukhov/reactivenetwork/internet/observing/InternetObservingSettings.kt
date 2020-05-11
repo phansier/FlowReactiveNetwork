@@ -24,8 +24,7 @@ class InternetObservingSettings private constructor(
     private constructor(builder: Builder = builder()) : this(
         builder.initialInterval, builder.interval, builder.host, builder.port, builder.timeout,
         builder.httpResponse, builder.errorHandler, builder.strategy
-    ) {
-    }
+    )
 
     /**
      * @return initial ping interval in milliseconds

@@ -6,12 +6,12 @@ object Preconditions {
     /**
      * Validation method, which checks if an object is null
      *
-     * @param object to verify
+     * @param o object to verify
      * @param message to be thrown in exception
      */
     fun checkNotNull(o: Any?, message: String) {
         if (o == null) {
-            throw IllegalArgumentException(message);
+            throw IllegalArgumentException(message)
         }
     }
 
@@ -23,7 +23,7 @@ object Preconditions {
      */
     fun checkNotNullOrEmpty(string: String?,  message:String) {
         if (string == null || string.isEmpty()) {
-            throw IllegalArgumentException(message);
+            throw IllegalArgumentException(message)
         }
     }
 
@@ -35,7 +35,7 @@ object Preconditions {
      */
     fun checkGreaterOrEqualToZero(number: Int,  message: String) {
         if (number < 0) {
-            throw IllegalArgumentException(message);
+            throw IllegalArgumentException(message)
         }
     }
 
@@ -47,7 +47,7 @@ object Preconditions {
      */
     fun checkGreaterThanZero(number: Int,  message: String) {
         if (number <= 0) {
-            throw IllegalArgumentException(message);
+            throw IllegalArgumentException(message)
         }
     }
 
@@ -58,7 +58,7 @@ object Preconditions {
      * @return boolean true if current Android version is Lollipop or higher
      */
     fun isAtLeastAndroidLollipop(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
     }
 
     /**
@@ -68,6 +68,6 @@ object Preconditions {
      * @return boolean true if current Android version is Marshmallow or higher
      */
     fun isAtLeastAndroidMarshmallow():Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     }
 }

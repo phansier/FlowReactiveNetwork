@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.launchIn
 import org.junit.Rule
 import kotlin.test.assertEquals
 
-abstract class BaseFlowTest(private val overrideMainDispatcher: Boolean = false) {
+abstract class BaseFlowTest(overrideMainDispatcher: Boolean = false) {
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule(overrideMainDispatcher)
 

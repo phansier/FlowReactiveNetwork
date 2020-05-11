@@ -27,7 +27,6 @@ import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.Connectivity
 
-// we're suppressing PMD warnings because we want static imports in tests
 @ObsoleteCoroutinesApi
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -106,7 +105,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Test
     fun shouldNotBeInIdleModeWhenDeviceIsNotInIdleAndIsNotIgnoringBatteryOptimizations() { // given
-        preparePowerManagerMocks(false, false)
+        preparePowerManagerMocks(idleMode = false, ignoreOptimizations = false)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -115,7 +114,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Test
     fun shouldBeInIdleModeWhenDeviceIsNotIgnoringBatteryOptimizations() { // given
-        preparePowerManagerMocks(true, false)
+        preparePowerManagerMocks(idleMode = true, ignoreOptimizations = false)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -124,7 +123,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Test
     fun shouldNotBeInIdleModeWhenDeviceIsInIdleModeAndIgnoringBatteryOptimizations() { // given
-        preparePowerManagerMocks(true, true)
+        preparePowerManagerMocks(idleMode = true, ignoreOptimizations = true)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -133,7 +132,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Test
     fun shouldNotBeInIdleModeWhenDeviceIsNotInIdleMode() { // given
-        preparePowerManagerMocks(false, true)
+        preparePowerManagerMocks(idleMode = false, ignoreOptimizations = true)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -142,7 +141,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Test
     fun shouldReceiveIntentInIdleMode() { // given
-        preparePowerManagerMocks(true, false)
+        preparePowerManagerMocks(idleMode = true, ignoreOptimizations = false)
         val broadcastReceiver = strategy.createIdleBroadcastReceiver()
         // when
         broadcastReceiver.onReceive(contextMock, intent)
@@ -152,7 +151,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Test
     fun shouldReceiveIntentWhenIsNotInIdleMode() { // given
-        preparePowerManagerMocks(false, false)
+        preparePowerManagerMocks(idleMode = false, ignoreOptimizations = false)
         val broadcastReceiver = strategy.createIdleBroadcastReceiver()
         // when
         broadcastReceiver.onReceive(contextMock, intent)

@@ -23,7 +23,7 @@ class PreLollipopNetworkObservingStrategy : NetworkObservingStrategy {
     override fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val filter = IntentFilter()
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-        return callbackFlow<Connectivity> {
+        return callbackFlow {
             val receiver: BroadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(
                     context: Context,
@@ -41,26 +41,6 @@ class PreLollipopNetworkObservingStrategy : NetworkObservingStrategy {
                 }
             }
         }
-        /*return Observable.create(object : ObservableOnSubscribe<Connectivity?>() {
-            @Throws(Exception::class)
-            fun subscribe(emitter: ObservableEmitter<Connectivity?>) {
-                val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-                    override fun onReceive(
-                        context: Context,
-                        intent: Intent
-                    ) {
-                        emitter.onNext(Connectivity.create(context))
-                    }
-                }
-                context.registerReceiver(receiver, filter)
-                val disposable: Disposable = disposeInUiThread(object : Action() {
-                    fun run() {
-                        tryToUnregisterReceiver(context, receiver)
-                    }
-                })
-                emitter.setDisposable(disposable)
-            }
-        }).defaultIfEmpty(Connectivity.create())*/
     }
 
     internal fun tryToUnregisterReceiver(
@@ -80,25 +60,4 @@ class PreLollipopNetworkObservingStrategy : NetworkObservingStrategy {
     ) {
         Log.e(ReactiveNetwork.LOG_TAG, message, exception)
     }
-
-    /*private fun disposeInUiThread(action: Action): Disposable {
-        return Disposables.fromAction(object : Action() {
-            @Throws(Exception::class)
-            fun run() {
-                if (Looper.getMainLooper() == Looper.myLooper()) {
-                    action.run()
-                } else {
-                    val inner: Scheduler.Worker = AndroidSchedulers.mainThread().createWorker()
-                    inner.schedule(Runnable {
-                        try {
-                            action.run()
-                        } catch (e: Exception) {
-                            onError("Could not unregister receiver in UI Thread", e)
-                        }
-                        inner.dispose()
-                    })
-                }
-            }
-        })
-    }*/
 }
