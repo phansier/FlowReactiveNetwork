@@ -27,13 +27,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.network.observing.strategy.LollipopNetworkObservingStrategy
 import ru.beryukhov.reactivenetwork.network.observing.strategy.PreLollipopNetworkObservingStrategy
 
 @FlowPreview
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class NetworkObservingStrategyTest {
+class NetworkObservingStrategyTest: BaseFlowTest() {
     @Test
     fun lollipopObserveNetworkConnectivityShouldBeConnectedWhenNetworkIsAvailable() { // given
         val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
@@ -51,13 +52,11 @@ class NetworkObservingStrategyTest {
     private fun assertThatIsConnected(strategy: NetworkObservingStrategy) { // given
         val context = RuntimeEnvironment.application.applicationContext
         //when
-        runBlockingTest {
-            val testFlow = strategy.observeNetworkConnectivity(context).map { it.state }.testIn(scope = this)
+
+            val testFlow = strategy.observeNetworkConnectivity(context).map { it.state }.testIn(scope = testScopeRule)
 
             // then
             testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
 
-
-        }
     }
 }

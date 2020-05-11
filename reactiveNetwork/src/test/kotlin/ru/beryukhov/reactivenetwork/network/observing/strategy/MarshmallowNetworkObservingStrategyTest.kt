@@ -30,10 +30,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -42,6 +39,7 @@ import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.Connectivity
 
 // we're suppressing PMD warnings because we want static imports in tests
@@ -49,7 +47,7 @@ import ru.beryukhov.reactivenetwork.Connectivity
 @FlowPreview
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-open class MarshmallowNetworkObservingStrategyTest {
+open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     private val strategy = spyk(MarshmallowNetworkObservingStrategy())
 
@@ -68,15 +66,13 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldObserveConnectivity() { // given
-        val context =
-            RuntimeEnvironment.application.applicationContext
+        val context = RuntimeEnvironment.application.applicationContext
         // when
-        runBlockingTest {
-            val testFlow =
-                strategy.observeNetworkConnectivity(context).map { it.state }.testIn(scope = this)
-            // then
-            testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
-        }
+
+        val testFlow = strategy.observeNetworkConnectivity(context).map { it.state }
+            .testIn(scope = testScopeRule)
+        // then
+        testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
     }
     //Rx specific test
     /*@Test
@@ -103,8 +99,7 @@ open class MarshmallowNetworkObservingStrategyTest {
     fun shouldTryToUnregisterCallbackOnDispose() { // given
         // when
         runBlockingTest {
-            val testFlow =
-                strategy.observeNetworkConnectivity(context).testIn(scope = this)
+            val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = this)
             this.cancel()
 
             // then
@@ -195,12 +190,10 @@ open class MarshmallowNetworkObservingStrategyTest {
     @Test
     fun shouldCreateNetworkCallbackOnSubscribe() {
         // when
-        runBlockingTest {
-            val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = this)
+        val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = testScopeRule)
 
-            // then
-            verify { strategy.createNetworkCallback(context) }
-        }
+        // then
+        verify { strategy.createNetworkCallback(context) }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

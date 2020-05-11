@@ -17,18 +17,24 @@ package ru.beryukhov.reactivenetwork
 
 import android.content.Context
 import android.net.NetworkInfo
+import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -44,18 +50,19 @@ import ru.beryukhov.reactivenetwork.internet.observing.strategy.SocketInternetOb
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 import ru.beryukhov.reactivenetwork.network.observing.strategy.LollipopNetworkObservingStrategy
 import java.util.concurrent.Callable
+import kotlin.test.assertEquals
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 @FlowPreview
 @RunWith(RobolectricTestRunner::class)
-class ReactiveNetworkTest {
+class ReactiveNetworkTest: BaseFlowTest() {
     @Test
     fun testReactiveNetworkObjectShouldNotBeNull() { // given
         // when
-        val reactiveNetwork: ReactiveNetwork = create()
+        val reactiveNetwork = ReactiveNetwork()
         // then
-        Truth.assertThat(reactiveNetwork).isNotNull()
+        assertThat(reactiveNetwork).isNotNull()
     }
 
     @Test
@@ -78,7 +85,7 @@ class ReactiveNetworkTest {
     private fun networkConnectivityObservableShouldNotBeNull() { // given
         val context: Context = RuntimeEnvironment.application
         // when
-        val observable = ReactiveNetwork.create().observeNetworkConnectivity(context)
+        val observable = ReactiveNetwork().observeNetworkConnectivity(context)
         // then
         assertThat(observable).isNotNull()
     }
@@ -88,7 +95,7 @@ class ReactiveNetworkTest {
         val context: Context = RuntimeEnvironment.application
         val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
         // when
-        val observable = ReactiveNetwork.create().observeNetworkConnectivity(context, strategy)
+        val observable = ReactiveNetwork().observeNetworkConnectivity(context, strategy)
         // then
         assertThat(observable).isNotNull()
     }
@@ -96,21 +103,20 @@ class ReactiveNetworkTest {
     @Test
     fun observeInternetConnectivityDefaultShouldNotBeNull() { // given
         // when
-        val observable = ReactiveNetwork.create().observeInternetConnectivity()
+        val observable = ReactiveNetwork().observeInternetConnectivity()
         // then
         assertThat(observable).isNotNull()
     }
 
     @Test
     fun observeNetworkConnectivityShouldBeConnectedOnStartWhenNetworkIsAvailable() {
-        runBlockingTest {
+        runBlocking {
             // given
             val context = RuntimeEnvironment.application
             // when
-            val connectivityFlow =
-                ReactiveNetwork.create().observeNetworkConnectivity(context).map{it.state}.testIn(scope = this)
+            val connectivityFlow = ReactiveNetwork().observeNetworkConnectivity(context).map { it.state }
             // then
-            connectivityFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
+            connectivityFlow.expectFirst(NetworkInfo.State.CONNECTED)
         }
     }
 
@@ -159,7 +165,7 @@ class ReactiveNetworkTest {
         val errorHandler: ErrorHandler =
             DefaultErrorHandler()
         // when
-        val observable = ReactiveNetwork.create().observeInternetConnectivity(
+        val observable = ReactiveNetwork().observeInternetConnectivity(
             strategy,
             TEST_VALID_INITIAL_INTERVAL,
             TEST_VALID_INTERVAL,
@@ -231,7 +237,7 @@ class ReactiveNetworkTest {
             .build()
         // then
         val observable =
-            ReactiveNetwork.create().observeInternetConnectivity(settings)
+            ReactiveNetwork().observeInternetConnectivity(settings)
         assertThat(observable).isNotNull()
     }
 
@@ -273,7 +279,7 @@ class ReactiveNetworkTest {
                 httpResponse: Int,
                 errorHandler: ErrorHandler
             ): Flow<Boolean> {
-                return flow{}
+                return flow {}
             }
 
             /*fun checkInternetConnectivity(

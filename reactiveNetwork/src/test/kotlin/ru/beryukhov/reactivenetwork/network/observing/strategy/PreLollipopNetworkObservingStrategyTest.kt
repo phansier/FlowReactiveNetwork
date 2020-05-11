@@ -41,11 +41,6 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 @RunWith(RobolectricTestRunner::class)
 open class PreLollipopNetworkObservingStrategyTest {
 
-    /*@Spy
-    val strategy:PreLollipopNetworkObservingStrategy = PreLollipopNetworkObservingStrategy()
-    @Mock
-    lateinit var broadcastReceiver: BroadcastReceiver*/
-
     @Test
     fun shouldObserveConnectivity() { // given
         val strategy: NetworkObservingStrategy = PreLollipopNetworkObservingStrategy()

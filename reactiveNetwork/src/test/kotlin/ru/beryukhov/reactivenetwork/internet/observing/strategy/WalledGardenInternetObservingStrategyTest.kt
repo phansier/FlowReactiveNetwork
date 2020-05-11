@@ -15,8 +15,6 @@
  */
 package ru.beryukhov.reactivenetwork.internet.observing.strategy
 
-import at.florianschuster.test.flow.emission
-import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import com.google.common.truth.Truth
 import io.mockk.every
@@ -25,11 +23,12 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -40,7 +39,7 @@ import java.net.HttpURLConnection
 @RunWith(
     RobolectricTestRunner::class
 )
-open class WalledGardenInternetObservingStrategyTest {
+class WalledGardenInternetObservingStrategyTest : BaseFlowTest() {
 
     private val errorHandler = mockk<ErrorHandler>(relaxed = true)
     private val strategy = spyk(WalledGardenInternetObservingStrategy())
@@ -49,8 +48,7 @@ open class WalledGardenInternetObservingStrategyTest {
 
     @Test
     fun shouldBeConnectedToTheInternet() { // given
-        val errorHandlerStub =
-            createErrorHandlerStub()
+        val errorHandlerStub = createErrorHandlerStub()
         every {
             strategy.isConnected(
                 host,
@@ -62,7 +60,7 @@ open class WalledGardenInternetObservingStrategyTest {
         } returns true
 
         // when
-        runBlockingTest {
+        runBlocking {
             val testFlow = strategy.observeInternetConnectivity(
                 INITIAL_INTERVAL_IN_MS,
                 INTERVAL_IN_MS,
@@ -71,10 +69,10 @@ open class WalledGardenInternetObservingStrategyTest {
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
-            ).testIn(scope = this)
+            )
 
             // then
-            testFlow expect emission(index = 0, expected = true)
+            testFlow.expectFirst(true)
         }
     }
 
@@ -92,7 +90,7 @@ open class WalledGardenInternetObservingStrategyTest {
             )
         } returns false
         // when
-        runBlockingTest {
+        runBlocking {
             val testFlow = strategy.observeInternetConnectivity(
                 INITIAL_INTERVAL_IN_MS,
                 INTERVAL_IN_MS,
@@ -101,10 +99,10 @@ open class WalledGardenInternetObservingStrategyTest {
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
-            ).testIn(scope = this)
+            )
 
             // then
-            testFlow expect emission(index = 0, expected = false)
+            testFlow.expectFirst(false)
         }
     }
 
@@ -189,11 +187,13 @@ open class WalledGardenInternetObservingStrategyTest {
     fun shouldHandleAnExceptionWhileCreatingHttpUrlConnection() { // given
         val errorMsg = "Could not establish connection with WalledGardenStrategy"
         val givenException = IOException(errorMsg)
-        every { strategy.createHttpUrlConnection(
-            HOST_WITH_HTTP,
-            PORT,
-            TIMEOUT_IN_MS
-        ) } throws (givenException)
+        every {
+            strategy.createHttpUrlConnection(
+                HOST_WITH_HTTP,
+                PORT,
+                TIMEOUT_IN_MS
+            )
+        } throws (givenException)
         // when
         strategy.isConnected(
             HOST_WITH_HTTP,
@@ -235,11 +235,13 @@ open class WalledGardenInternetObservingStrategyTest {
         val errorMsg = "Could not establish connection with WalledGardenStrategy"
         val givenException = IOException(errorMsg)
         val host = "https://clients3.google.com"
-        every { strategy.createHttpsUrlConnection(
-            host,
-            PORT,
-            TIMEOUT_IN_MS
-        ) } throws (givenException)
+        every {
+            strategy.createHttpsUrlConnection(
+                host,
+                PORT,
+                TIMEOUT_IN_MS
+            )
+        } throws (givenException)
         // when
         strategy.isConnected(
             host,
@@ -249,7 +251,7 @@ open class WalledGardenInternetObservingStrategyTest {
             errorHandler
         )
         // then
-        verify{ errorHandler.handleError(givenException, errorMsg)}
+        verify { errorHandler.handleError(givenException, errorMsg) }
     }
 
     @Test
@@ -290,19 +292,19 @@ open class WalledGardenInternetObservingStrategyTest {
         } returns true
 
         // when
-        runBlockingTest {
-            strategy.observeInternetConnectivity(
-                INITIAL_INTERVAL_IN_MS,
-                INTERVAL_IN_MS,
-                host,
-                PORT,
-                TIMEOUT_IN_MS,
-                HTTP_RESPONSE,
-                errorHandlerStub
-            ).testIn(scope = this)
-            // then
-            verify { strategy.adjustHost(host) }
-        }
+
+        strategy.observeInternetConnectivity(
+            INITIAL_INTERVAL_IN_MS,
+            INTERVAL_IN_MS,
+            host,
+            PORT,
+            TIMEOUT_IN_MS,
+            HTTP_RESPONSE,
+            errorHandlerStub
+        ).testIn(scope = testScopeRule)
+        // then
+        verify { strategy.adjustHost(host) }
+
     }
 
     private fun createErrorHandlerStub(): ErrorHandler {

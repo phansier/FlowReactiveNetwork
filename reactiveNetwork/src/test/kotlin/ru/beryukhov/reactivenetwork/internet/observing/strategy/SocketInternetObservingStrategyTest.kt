@@ -30,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
+import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
 import java.io.IOException
 import java.net.InetSocketAddress
@@ -38,7 +39,7 @@ import java.net.Socket
 @FlowPreview
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-open class SocketInternetObservingStrategyTest {
+class SocketInternetObservingStrategyTest : BaseFlowTest() {
 
     private val strategy = spyk(SocketInternetObservingStrategy())
     private val errorHandler = mockk<ErrorHandler>(relaxed = true)
@@ -58,20 +59,20 @@ open class SocketInternetObservingStrategyTest {
         } returns true
 
         // when
-        runBlockingTest {
-            val testFlow = strategy.observeInternetConnectivity(
-                INITIAL_INTERVAL_IN_MS,
-                INTERVAL_IN_MS,
-                host,
-                PORT,
-                TIMEOUT_IN_MS,
-                HTTP_RESPONSE,
-                errorHandler
-            ).testIn(scope = this)
 
-            // then
-            testFlow expect emission(index = 0, expected = true)
-        }
+        val testFlow = strategy.observeInternetConnectivity(
+            INITIAL_INTERVAL_IN_MS,
+            INTERVAL_IN_MS,
+            host,
+            PORT,
+            TIMEOUT_IN_MS,
+            HTTP_RESPONSE,
+            errorHandler
+        ).testIn(scope = testScopeRule)
+
+        // then
+        testFlow expect emission(index = 0, expected = true)
+
     }
 
     @Test
@@ -85,20 +86,20 @@ open class SocketInternetObservingStrategyTest {
             )
         } returns false
         // when
-        runBlockingTest {
-            val testFlow = strategy.observeInternetConnectivity(
-                INITIAL_INTERVAL_IN_MS,
-                INTERVAL_IN_MS,
-                host,
-                PORT,
-                TIMEOUT_IN_MS,
-                HTTP_RESPONSE,
-                errorHandler
-            ).testIn(scope = this)
 
-            // then
-            testFlow expect emission(index = 0, expected = false)
-        }
+        val testFlow = strategy.observeInternetConnectivity(
+            INITIAL_INTERVAL_IN_MS,
+            INTERVAL_IN_MS,
+            host,
+            PORT,
+            TIMEOUT_IN_MS,
+            HTTP_RESPONSE,
+            errorHandler
+        ).testIn(scope = testScopeRule)
+
+        // then
+        testFlow expect emission(index = 0, expected = false)
+
     }
 
     @Test
@@ -228,19 +229,19 @@ open class SocketInternetObservingStrategyTest {
         } returns true
 
         // when
-        runBlockingTest {
-            strategy.observeInternetConnectivity(
-                INITIAL_INTERVAL_IN_MS,
-                INTERVAL_IN_MS,
-                host,
-                PORT,
-                TIMEOUT_IN_MS,
-                HTTP_RESPONSE,
-                errorHandler
-            ).testIn(scope = this)
-            // then
-            verify { strategy.adjustHost(host) }
-        }
+
+        strategy.observeInternetConnectivity(
+            INITIAL_INTERVAL_IN_MS,
+            INTERVAL_IN_MS,
+            host,
+            PORT,
+            TIMEOUT_IN_MS,
+            HTTP_RESPONSE,
+            errorHandler
+        ).testIn(scope = testScopeRule)
+        // then
+        verify { strategy.adjustHost(host) }
+
     }
 
     companion object {
