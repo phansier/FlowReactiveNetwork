@@ -19,16 +19,16 @@ import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import com.google.common.truth.Truth
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Spy
-import org.mockito.junit.MockitoJUnit
+
 import org.robolectric.RobolectricTestRunner
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
 import java.io.IOException
@@ -39,29 +39,24 @@ import java.net.Socket
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 open class SocketInternetObservingStrategyTest {
-    @get:Rule
-    var rule = MockitoJUnit.rule()
-    @Spy
-    private val strategy: SocketInternetObservingStrategy? = null
-    @Mock
-    private val errorHandler: ErrorHandler? =
-        null
-    @Mock
-    private val socket: Socket? = null
 
-    private val host: String
-         get() = strategy!!.getDefaultPingHost()
+    private val strategy = spyk(SocketInternetObservingStrategy())
+    private val errorHandler = mockk<ErrorHandler>(relaxed = true)
+    private val socket = mockk<Socket>(relaxed = true)
+
+    private val host: String = strategy.getDefaultPingHost()
 
     @Test
     fun shouldBeConnectedToTheInternet() { // given
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
-                errorHandler!!
+                errorHandler
             )
-        ).thenReturn(true)
+        } returns true
+
         // when
         runBlockingTest {
             val testFlow = strategy.observeInternetConnectivity(
@@ -81,14 +76,14 @@ open class SocketInternetObservingStrategyTest {
 
     @Test
     fun shouldNotBeConnectedToTheInternet() { // given
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
-                errorHandler!!
+                errorHandler
             )
-        ).thenReturn(false)
+        } returns false
         // when
         runBlockingTest {
             val testFlow = strategy.observeInternetConnectivity(
@@ -113,15 +108,15 @@ open class SocketInternetObservingStrategyTest {
             host,
             PORT
         )
-        Mockito.doThrow(IOException()).`when`(socket)
-            ?.connect(address, TIMEOUT_IN_MS)
+        every { socket.connect(address, TIMEOUT_IN_MS) } throws (IOException())
+
         // when
-        val isConnected = strategy!!.isConnected(
-            socket!!,
+        val isConnected = strategy.isConnected(
+            socket,
             host,
             PORT,
             TIMEOUT_IN_MS,
-            errorHandler!!
+            errorHandler
         )
         // then
         Truth.assertThat(isConnected).isFalse()
@@ -132,31 +127,29 @@ open class SocketInternetObservingStrategyTest {
     fun shouldHandleAnExceptionThrownDuringClosingTheSocket() { // given
         val errorMsg = "Could not close the socket"
         val givenException = IOException(errorMsg)
-        Mockito.doThrow(givenException).`when`(socket)!!.close()
+        every { socket.close() } throws (givenException)
+
         // when
-        strategy!!.isConnected(
-            socket!!,
+        strategy.isConnected(
+            socket,
             host,
             PORT,
             TIMEOUT_IN_MS,
-            errorHandler!!
+            errorHandler
         )
         // then
-        Mockito.verify(
-            errorHandler,
-            Mockito.times(1)
-        )!!.handleError(givenException, errorMsg)
+        verify(exactly = 1) { errorHandler.handleError(givenException, errorMsg) }
     }
 
     //Single methods are commented out
     /*@Test
     fun shouldBeConnectedToTheInternetViaSingle() { // given
         Mockito.`when`(
-            strategy!!.isConnected(
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
-                errorHandler!!
+                errorHandler
             )
         ).thenReturn(true)
         // when
@@ -175,11 +168,11 @@ open class SocketInternetObservingStrategyTest {
     @Test
     fun shouldNotBeConnectedToTheInternetViaSingle() { // given
         Mockito.`when`(
-            strategy!!.isConnected(
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
-                errorHandler!!
+                errorHandler
             )
         ).thenReturn(false)
         // when
@@ -198,7 +191,7 @@ open class SocketInternetObservingStrategyTest {
     @Test
     fun shouldNotTransformHost() { // when
         val transformedHost =
-            strategy!!.adjustHost(HOST_WITHOUT_HTTP)
+            strategy.adjustHost(HOST_WITHOUT_HTTP)
         // then
         Truth.assertThat(transformedHost)
             .isEqualTo(HOST_WITHOUT_HTTP)
@@ -207,7 +200,7 @@ open class SocketInternetObservingStrategyTest {
     @Test
     fun shouldRemoveHttpProtocolFromHost() { // when
         val transformedHost =
-            strategy!!.adjustHost(HOST_WITH_HTTP)
+            strategy.adjustHost(HOST_WITH_HTTP)
         // then
         Truth.assertThat(transformedHost)
             .isEqualTo(HOST_WITHOUT_HTTP)
@@ -216,7 +209,7 @@ open class SocketInternetObservingStrategyTest {
     @Test
     fun shouldRemoveHttpsProtocolFromHost() { // when
         val transformedHost =
-            strategy!!.adjustHost(HOST_WITH_HTTP)
+            strategy.adjustHost(HOST_WITH_HTTP)
         // then
         Truth.assertThat(transformedHost)
             .isEqualTo(HOST_WITHOUT_HTTP)
@@ -225,14 +218,15 @@ open class SocketInternetObservingStrategyTest {
     @Test
     fun shouldAdjustHostDuringCheckingConnectivity() { // given
         val host = host
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
-                errorHandler!!
+                errorHandler
             )
-        ).thenReturn(true)
+        } returns true
+
         // when
         runBlockingTest {
             strategy.observeInternetConnectivity(
@@ -245,9 +239,10 @@ open class SocketInternetObservingStrategyTest {
                 errorHandler
             ).testIn(scope = this)
             // then
-            Mockito.verify(strategy)!!.adjustHost(host)
+            verify { strategy.adjustHost(host) }
         }
     }
+
     companion object {
         private const val INITIAL_INTERVAL_IN_MS = 0
         private const val INTERVAL_IN_MS = 2000

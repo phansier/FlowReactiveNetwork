@@ -16,7 +16,6 @@
 package ru.beryukhov.reactivenetwork.network.observing.strategy
 
 import android.annotation.TargetApi
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -27,6 +26,10 @@ import android.os.Build
 import android.os.PowerManager
 import at.florianschuster.test.flow.*
 import com.google.common.truth.Truth
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -34,14 +37,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Spy
-import org.mockito.junit.MockitoJUnit
+
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.Connectivity
@@ -50,31 +48,22 @@ import ru.beryukhov.reactivenetwork.Connectivity
 @ObsoleteCoroutinesApi
 @FlowPreview
 @ExperimentalCoroutinesApi
-@RunWith(
-    RobolectricTestRunner::class
-)
+@RunWith(RobolectricTestRunner::class)
 open class MarshmallowNetworkObservingStrategyTest {
-    @get:Rule
-    var rule = MockitoJUnit.rule()
-    @Spy
-    private val strategy =
-        MarshmallowNetworkObservingStrategy()
-    @Mock
-    private val powerManager: PowerManager? = null
-    @Mock
-    private val connectivityManager: ConnectivityManager? = null
-    @Mock
-    private val contextMock: Context? = null
-    @Mock
-    private val intent: Intent? = null
-    @Mock
-    private val network: Network? = null
-    @Spy
-    private var context: Context? = null
+
+    private val strategy = spyk(MarshmallowNetworkObservingStrategy())
+
+    private val powerManager = mockk<PowerManager>(relaxed = true)
+    private val connectivityManager = mockk<ConnectivityManager>(relaxed = true)
+    private val contextMock = mockk <Context>(relaxed = true)
+    private val intent = mockk <Intent>(relaxed = true)
+    private val network = mockk <Network>(relaxed = true)
+
+    private lateinit var context : Context
 
     @Before
     fun setUp() {
-        context = RuntimeEnvironment.application.applicationContext
+        context = spyk(RuntimeEnvironment.application.applicationContext)
     }
 
     @Test
@@ -83,8 +72,7 @@ open class MarshmallowNetworkObservingStrategyTest {
             RuntimeEnvironment.application.applicationContext
         // when
         runBlockingTest {
-            val testFlow =
-                strategy.observeNetworkConnectivity(context).map { it.state() }.testIn(scope = this)
+            val testFlow = strategy.observeNetworkConnectivity(context).map { it.state() }.testIn(scope = this)
             // then
             testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
         }
@@ -107,8 +95,7 @@ open class MarshmallowNetworkObservingStrategyTest {
         // when
         strategy.onError(message, exception)
         // then
-        Mockito.verify(strategy, Mockito.times(1))
-            .onError(message, exception)
+        verify(exactly = 1){strategy.onError(message, exception)}
     }
 
     @Test
@@ -120,11 +107,7 @@ open class MarshmallowNetworkObservingStrategyTest {
             this.cancel()
 
             // then
-            Mockito.verify(strategy).tryToUnregisterCallback(
-                ArgumentMatchers.any(
-                    ConnectivityManager::class.java
-                )
-            )
+            verify { strategy.tryToUnregisterCallback(any()) }
         }
     }
 
@@ -132,19 +115,17 @@ open class MarshmallowNetworkObservingStrategyTest {
     fun shouldTryToUnregisterReceiverOnDispose() { // given
         // when
         runBlockingTest {
-            val testFlow =
-                strategy.observeNetworkConnectivity(context!!).testIn(scope = this)
+            val testFlow = strategy.observeNetworkConnectivity(context!!).testIn(scope = this)
             this.cancel()
 
             // then
-            Mockito.verify(strategy)
-                .tryToUnregisterReceiver(context!!)
+            verify { strategy.tryToUnregisterReceiver(context) }
         }
     }
 
     @Test
     fun shouldNotBeInIdleModeWhenDeviceIsNotInIdleAndIsNotIgnoringBatteryOptimizations() { // given
-        preparePowerManagerMocks(java.lang.Boolean.FALSE, java.lang.Boolean.FALSE)
+        preparePowerManagerMocks(false, false)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -153,7 +134,7 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldBeInIdleModeWhenDeviceIsNotIgnoringBatteryOptimizations() { // given
-        preparePowerManagerMocks(java.lang.Boolean.TRUE, java.lang.Boolean.FALSE)
+        preparePowerManagerMocks(true, false)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -162,7 +143,7 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldNotBeInIdleModeWhenDeviceIsInIdleModeAndIgnoringBatteryOptimizations() { // given
-        preparePowerManagerMocks(java.lang.Boolean.TRUE, java.lang.Boolean.TRUE)
+        preparePowerManagerMocks(true, true)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -171,7 +152,7 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldNotBeInIdleModeWhenDeviceIsNotInIdleMode() { // given
-        preparePowerManagerMocks(java.lang.Boolean.FALSE, java.lang.Boolean.TRUE)
+        preparePowerManagerMocks(false, true)
         // when
         val isIdleMode = strategy.isIdleMode(contextMock)
         // then
@@ -180,30 +161,22 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldReceiveIntentInIdleMode() { // given
-        preparePowerManagerMocks(java.lang.Boolean.TRUE, java.lang.Boolean.FALSE)
+        preparePowerManagerMocks(true, false)
         val broadcastReceiver = strategy.createIdleBroadcastReceiver()
         // when
         broadcastReceiver.onReceive(contextMock, intent)
         // then
-        Mockito.verify(strategy).onNext(
-            ArgumentMatchers.any(
-                Connectivity::class.java
-            )
-        )
+        verify { strategy.onNext(any()) }
     }
 
     @Test
     fun shouldReceiveIntentWhenIsNotInIdleMode() { // given
-        preparePowerManagerMocks(java.lang.Boolean.FALSE, java.lang.Boolean.FALSE)
+        preparePowerManagerMocks(false, false)
         val broadcastReceiver = strategy.createIdleBroadcastReceiver()
         // when
         broadcastReceiver.onReceive(contextMock, intent)
         // then
-        Mockito.verify(strategy).onNext(
-            ArgumentMatchers.any(
-                Connectivity::class.java
-            )
-        )
+        verify { strategy.onNext(any()) }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -212,23 +185,20 @@ open class MarshmallowNetworkObservingStrategyTest {
         ignoreOptimizations: Boolean
     ) {
         val packageName = "com.github.pwittchen.test"
-        Mockito.`when`(contextMock!!.packageName).thenReturn(packageName)
-        Mockito.`when`(contextMock.getSystemService(Context.POWER_SERVICE))
-            .thenReturn(powerManager)
-        Mockito.`when`(powerManager!!.isDeviceIdleMode).thenReturn(idleMode)
-        Mockito.`when`(powerManager.isIgnoringBatteryOptimizations(packageName))
-            .thenReturn(ignoreOptimizations)
+        every{contextMock.packageName} returns packageName
+        every{contextMock.getSystemService(Context.POWER_SERVICE)} returns powerManager
+        every{powerManager.isDeviceIdleMode} returns idleMode
+        every{powerManager.isIgnoringBatteryOptimizations(packageName)} returns ignoreOptimizations
     }
 
     @Test
     fun shouldCreateNetworkCallbackOnSubscribe() {
         // when
         runBlockingTest {
-            val testFlow =
-                strategy.observeNetworkConnectivity(context!!).testIn(scope = this)
+            val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = this)
 
             // then
-            Mockito.verify(strategy).createNetworkCallback(context!!)
+            verify{strategy.createNetworkCallback(context)}
         }
     }
 
@@ -239,25 +209,17 @@ open class MarshmallowNetworkObservingStrategyTest {
         // when
         networkCallback.onAvailable(network)
         // then
-        Mockito.verify(strategy).onNext(
-            ArgumentMatchers.any(
-                Connectivity::class.java
-            )
-        )
+        verify{strategy.onNext(any())}
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Test
     fun shouldInvokeOnNextOnNetworkLost() { // given
-        val networkCallback = strategy.createNetworkCallback(context!!)
+        val networkCallback = strategy.createNetworkCallback(context)
         // when
         networkCallback.onLost(network)
         // then
-        Mockito.verify(strategy).onNext(
-            ArgumentMatchers.any(
-                Connectivity::class.java
-            )
-        )
+        verify{strategy.onNext(any())}
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -265,31 +227,27 @@ open class MarshmallowNetworkObservingStrategyTest {
     fun shouldHandleErrorWhileTryingToUnregisterCallback() { // given
         strategy.observeNetworkConnectivity(context!!)
         val exception = IllegalArgumentException()
-        Mockito.doThrow(exception).`when`(connectivityManager)
-            ?.unregisterNetworkCallback(ArgumentMatchers.any(NetworkCallback::class.java))
+        every{connectivityManager.unregisterNetworkCallback(any<NetworkCallback>())} throws exception
         // when
         strategy.tryToUnregisterCallback(connectivityManager)
         // then
-        Mockito.verify(strategy).onError(
-            MarshmallowNetworkObservingStrategy.ERROR_MSG_NETWORK_CALLBACK,
-            exception
-        )
+        verify {
+            strategy.onError(
+                MarshmallowNetworkObservingStrategy.ERROR_MSG_NETWORK_CALLBACK,
+                exception
+            )
+        }
     }
 
     @Test
     fun shouldHandleErrorWhileTryingToUnregisterReceiver() { // given
         strategy.observeNetworkConnectivity(context!!)
         val exception = RuntimeException()
-        Mockito.doThrow(exception).`when`(contextMock)!!.unregisterReceiver(
-            ArgumentMatchers.any(
-                BroadcastReceiver::class.java
-            )
-        )
+        every{contextMock.unregisterReceiver(any())} throws exception
         // when
-        strategy.tryToUnregisterReceiver(contextMock!!)
+        strategy.tryToUnregisterReceiver(contextMock)
         // then
-        Mockito.verify(strategy)
-            .onError(MarshmallowNetworkObservingStrategy.ERROR_MSG_RECEIVER, exception)
+        verify { strategy.onError(MarshmallowNetworkObservingStrategy.ERROR_MSG_RECEIVER, exception)}
     }
 
     @Test

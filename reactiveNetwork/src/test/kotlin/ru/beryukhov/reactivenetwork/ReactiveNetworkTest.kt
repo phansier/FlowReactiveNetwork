@@ -52,9 +52,8 @@ import java.util.concurrent.Callable
 class ReactiveNetworkTest {
     @Test
     fun testReactiveNetworkObjectShouldNotBeNull() { // given
-        val reactiveNetwork: ReactiveNetwork
         // when
-        reactiveNetwork = create()
+        val reactiveNetwork: ReactiveNetwork = create()
         // then
         Truth.assertThat(reactiveNetwork).isNotNull()
     }

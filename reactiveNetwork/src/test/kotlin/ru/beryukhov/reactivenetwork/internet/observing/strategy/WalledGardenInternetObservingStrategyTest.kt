@@ -15,22 +15,19 @@
  */
 package ru.beryukhov.reactivenetwork.internet.observing.strategy
 
-import android.net.NetworkInfo
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import com.google.common.truth.Truth
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Spy
-import org.mockito.junit.MockitoJUnit
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
@@ -44,29 +41,26 @@ import java.net.HttpURLConnection
     RobolectricTestRunner::class
 )
 open class WalledGardenInternetObservingStrategyTest {
-    @get:Rule
-    var rule = MockitoJUnit.rule()
-    @Mock
-    private val errorHandler: ErrorHandler? = null
-    @Spy
-    private val strategy: WalledGardenInternetObservingStrategy? = null
 
-    private val host: String
-        get() = strategy!!.getDefaultPingHost()
+    private val errorHandler = mockk<ErrorHandler>(relaxed = true)
+    private val strategy = spyk(WalledGardenInternetObservingStrategy())
+
+    private val host: String = strategy.getDefaultPingHost()
 
     @Test
     fun shouldBeConnectedToTheInternet() { // given
         val errorHandlerStub =
             createErrorHandlerStub()
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
             )
-        ).thenReturn(true)
+        } returns true
+
         // when
         runBlockingTest {
             val testFlow = strategy.observeInternetConnectivity(
@@ -88,15 +82,15 @@ open class WalledGardenInternetObservingStrategyTest {
     fun shouldNotBeConnectedToTheInternet() { // given
         val errorHandlerStub =
             createErrorHandlerStub()
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
             )
-        ).thenReturn(false)
+        } returns false
         // when
         runBlockingTest {
             val testFlow = strategy.observeInternetConnectivity(
@@ -172,7 +166,7 @@ open class WalledGardenInternetObservingStrategyTest {
     fun shouldCreateHttpUrlConnection() { // given
         val parsedDefaultHost = "clients3.google.com"
         // when
-        val connection = strategy!!.createHttpUrlConnection(
+        val connection = strategy.createHttpUrlConnection(
             host,
             PORT,
             TIMEOUT_IN_MS
@@ -195,27 +189,21 @@ open class WalledGardenInternetObservingStrategyTest {
     fun shouldHandleAnExceptionWhileCreatingHttpUrlConnection() { // given
         val errorMsg = "Could not establish connection with WalledGardenStrategy"
         val givenException = IOException(errorMsg)
-        Mockito.`when`(
-            strategy!!.createHttpUrlConnection(
-                HOST_WITH_HTTP,
-                PORT,
-                TIMEOUT_IN_MS
-            )
-        ).thenThrow(
-            givenException
-        )
+        every { strategy.createHttpUrlConnection(
+            HOST_WITH_HTTP,
+            PORT,
+            TIMEOUT_IN_MS
+        ) } throws (givenException)
         // when
         strategy.isConnected(
             HOST_WITH_HTTP,
             PORT,
             TIMEOUT_IN_MS,
             HTTP_RESPONSE,
-            errorHandler!!
+            errorHandler
         )
         // then
-        Mockito.verify(
-            errorHandler
-        )!!.handleError(givenException, errorMsg)
+        verify { errorHandler.handleError(givenException, errorMsg) }
     }
 
     @Test
@@ -223,7 +211,7 @@ open class WalledGardenInternetObservingStrategyTest {
     fun shouldCreateHttpsUrlConnection() { // given
         val parsedDefaultHost = "clients3.google.com"
         // when
-        val connection: HttpURLConnection = strategy!!.createHttpsUrlConnection(
+        val connection: HttpURLConnection = strategy.createHttpsUrlConnection(
             "https://clients3.google.com",
             PORT,
             TIMEOUT_IN_MS
@@ -247,42 +235,33 @@ open class WalledGardenInternetObservingStrategyTest {
         val errorMsg = "Could not establish connection with WalledGardenStrategy"
         val givenException = IOException(errorMsg)
         val host = "https://clients3.google.com"
-        Mockito.`when`(
-            strategy!!.createHttpsUrlConnection(
-                host,
-                PORT,
-                TIMEOUT_IN_MS
-            )
-        ).thenThrow(
-            givenException
-        )
+        every { strategy.createHttpsUrlConnection(
+            host,
+            PORT,
+            TIMEOUT_IN_MS
+        ) } throws (givenException)
         // when
         strategy.isConnected(
             host,
             PORT,
             TIMEOUT_IN_MS,
             HTTP_RESPONSE,
-            errorHandler!!
+            errorHandler
         )
         // then
-        Mockito.verify(
-            errorHandler
-        )!!.handleError(givenException, errorMsg)
+        verify{ errorHandler.handleError(givenException, errorMsg)}
     }
 
     @Test
     fun shouldNotTransformHttpHost() { // when
-        val transformedHost =
-            strategy!!.adjustHost(HOST_WITH_HTTPS)
+        val transformedHost = strategy.adjustHost(HOST_WITH_HTTPS)
         // then
-        Truth.assertThat(transformedHost)
-            .isEqualTo(HOST_WITH_HTTPS)
+        Truth.assertThat(transformedHost).isEqualTo(HOST_WITH_HTTPS)
     }
 
     @Test
     fun shouldNotTransformHttpsHost() { // when
-        val transformedHost =
-            strategy!!.adjustHost(HOST_WITH_HTTPS)
+        val transformedHost = strategy.adjustHost(HOST_WITH_HTTPS)
         // then
         Truth.assertThat(transformedHost)
             .isEqualTo(HOST_WITH_HTTPS)
@@ -290,11 +269,9 @@ open class WalledGardenInternetObservingStrategyTest {
 
     @Test
     fun shouldAddHttpsProtocolToHost() { // when
-        val transformedHost =
-            strategy!!.adjustHost(HOST_WITHOUT_HTTPS)
+        val transformedHost = strategy.adjustHost(HOST_WITHOUT_HTTPS)
         // then
-        Truth.assertThat(transformedHost)
-            .isEqualTo(HOST_WITH_HTTPS)
+        Truth.assertThat(transformedHost).isEqualTo(HOST_WITH_HTTPS)
     }
 
     @Test
@@ -302,17 +279,16 @@ open class WalledGardenInternetObservingStrategyTest {
         val errorHandlerStub =
             createErrorHandlerStub()
         val host = host
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
             )
-        ).thenReturn(
-            true
-        )
+        } returns true
+
         // when
         runBlockingTest {
             strategy.observeInternetConnectivity(
@@ -325,7 +301,7 @@ open class WalledGardenInternetObservingStrategyTest {
                 errorHandlerStub
             ).testIn(scope = this)
             // then
-            Mockito.verify(strategy)!!.adjustHost(host)
+            verify { strategy.adjustHost(host) }
         }
     }
 

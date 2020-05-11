@@ -19,16 +19,14 @@ import android.net.NetworkInfo
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.Spy
-import org.mockito.junit.MockitoJUnit
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
@@ -37,10 +35,6 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 open class LollipopNetworkObservingStrategyTest {
-    @get:Rule
-    var rule = MockitoJUnit.rule()
-    @Spy
-    private val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
 
     @Test
     fun shouldObserveConnectivity() { // given
@@ -72,10 +66,10 @@ open class LollipopNetworkObservingStrategyTest {
     fun shouldCallOnError() { // given
         val message = "error message"
         val exception = Exception()
+        val strategy = spyk(LollipopNetworkObservingStrategy())
         // when
         strategy.onError(message, exception)
         // then
-        Mockito.verify(strategy, Mockito.times(1))
-            .onError(message, exception)
+        verify(exactly = 1) { strategy.onError(message, exception) }
     }
 }

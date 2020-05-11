@@ -15,20 +15,17 @@
  */
 package ru.beryukhov.reactivenetwork.internet.observing.error
 
-import org.junit.Rule
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.Spy
-import org.mockito.junit.MockitoJUnit
+
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 open class DefaultErrorHandlerTest {
-    @get:Rule
-    val rule = MockitoJUnit.rule()
-    @Spy
-    private val handler = DefaultErrorHandler()
+
+    private val handler = spyk(DefaultErrorHandler())
 
     @Test
     fun shouldHandleErrorDuringClosingSocket() { // given
@@ -37,9 +34,6 @@ open class DefaultErrorHandlerTest {
         // when
         handler.handleError(exception, errorMsg)
         // then
-        Mockito.verify(
-            handler,
-            Mockito.times(1)
-        ).handleError(exception, errorMsg)
+        verify(exactly = 1){handler.handleError(exception, errorMsg)}
     }
 }

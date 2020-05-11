@@ -5,6 +5,7 @@ plugins {
 
 android {
     compileSdkVersion 29
+    testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
         minSdkVersion 14

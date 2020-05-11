@@ -41,7 +41,7 @@ class Connectivity private constructor(builder: Builder = builder()) {
     private val roaming // NOPMD
             : Boolean
     private val typeName // NOPMD
-            : String
+            : String?
     private val subTypeName // NOPMD
             : String?
     private val reason // NOPMD
@@ -77,7 +77,7 @@ class Connectivity private constructor(builder: Builder = builder()) {
         return roaming
     }
 
-    fun typeName(): String {
+    fun typeName(): String? {
         return typeName
     }
 
@@ -190,7 +190,7 @@ class Connectivity private constructor(builder: Builder = builder()) {
         internal var available = false // NOPMD
         internal var failover = false // NOPMD
         internal var roaming = false // NOPMD
-        internal var typeName = "NONE" // NOPMD
+        internal var typeName:String? = "NONE" // NOPMD
         internal var subTypeName:String? = "NONE" // NOPMD
         internal var reason:String? = "" // NOPMD
         internal var extraInfo:String? = "" // NOPMD
@@ -229,12 +229,12 @@ class Connectivity private constructor(builder: Builder = builder()) {
             return this
         }
 
-        fun typeName(name: String): Builder {
+        fun typeName(name: String?): Builder {
             typeName = name
             return this
         }
 
-        fun subTypeName(subTypeName: String): Builder {
+        fun subTypeName(subTypeName: String?): Builder {
             this.subTypeName = subTypeName
             return this
         }

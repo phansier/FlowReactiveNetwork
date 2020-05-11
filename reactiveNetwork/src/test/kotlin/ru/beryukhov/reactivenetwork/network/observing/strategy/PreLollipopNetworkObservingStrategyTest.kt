@@ -21,19 +21,16 @@ import android.net.NetworkInfo
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Spy
-import org.mockito.junit.MockitoJUnit
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
@@ -43,12 +40,11 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 open class PreLollipopNetworkObservingStrategyTest {
-    @get:Rule
-    var rule = MockitoJUnit.rule()
-    @Spy
+
+    /*@Spy
     val strategy:PreLollipopNetworkObservingStrategy = PreLollipopNetworkObservingStrategy()
     @Mock
-    lateinit var broadcastReceiver: BroadcastReceiver
+    lateinit var broadcastReceiver: BroadcastReceiver*/
 
     @Test
     fun shouldObserveConnectivity() { // given
@@ -56,7 +52,8 @@ open class PreLollipopNetworkObservingStrategyTest {
         val context = RuntimeEnvironment.application.applicationContext
         // when
         runBlockingTest {
-            val testFlow = strategy.observeNetworkConnectivity(context).map { it.state() }.testIn(scope = this)
+            val testFlow =
+                strategy.observeNetworkConnectivity(context).map { it.state() }.testIn(scope = this)
             advanceTimeBy(1000)
             // then
             testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
@@ -83,39 +80,37 @@ open class PreLollipopNetworkObservingStrategyTest {
     fun shouldCallOnError() { // given
         val message = "error message"
         val exception = Exception()
+        val strategy = spyk(PreLollipopNetworkObservingStrategy())
         // when
         strategy.onError(message, exception)
         // then
-        Mockito.verify(strategy, Mockito.times(1))
-            .onError(message, exception)
+        verify(exactly = 1) { strategy.onError(message, exception) }
     }
 
     @Test
     fun shouldTryToUnregisterReceiver() { // given
         val strategy = PreLollipopNetworkObservingStrategy()
-        val context = Mockito.spy(RuntimeEnvironment.application)
+        val context = spyk(RuntimeEnvironment.application)
+        val broadcastReceiver = mockk<BroadcastReceiver>(relaxed = true)
         // when
         strategy.tryToUnregisterReceiver(context, broadcastReceiver)
         // then
-        Mockito.verify(context).unregisterReceiver(broadcastReceiver)
+        verify { context.unregisterReceiver(broadcastReceiver) }
     }
 
     @Test
     fun shouldTryToUnregisterReceiverAfterDispose() { // given
         val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<Context>()
-
+        val strategy = spyk(PreLollipopNetworkObservingStrategy())
         // when
         runBlockingTest {
+
             val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = this)
             this.cancel()
 
             // then
-            Mockito.verify(strategy).tryToUnregisterReceiver(
-                ArgumentMatchers.eq(context),
-                ArgumentMatchers.any(
-                    BroadcastReceiver::class.java
-                )
-            )
+            verify { strategy.tryToUnregisterReceiver(context, any()) }
+
         }
     }
 }
