@@ -1,0 +1,2 @@
+include ':reactiveNetwork'
+rootProject.name = "FlowReactiveNetwork"
