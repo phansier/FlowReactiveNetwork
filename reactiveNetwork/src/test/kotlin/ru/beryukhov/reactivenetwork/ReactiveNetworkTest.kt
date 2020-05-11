@@ -1,46 +1,21 @@
-/*
- * Copyright (C) 2016 Piotr Wittchen
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package ru.beryukhov.reactivenetwork
 
 import android.content.Context
 import android.net.NetworkInfo
-import at.florianschuster.test.coroutines.TestCoroutineScopeRule
-import at.florianschuster.test.flow.emission
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import ru.beryukhov.reactivenetwork.ReactiveNetwork
 import ru.beryukhov.reactivenetwork.ReactiveNetwork.Companion.create
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingSettings.Companion.builder
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
@@ -49,8 +24,6 @@ import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
 import ru.beryukhov.reactivenetwork.internet.observing.strategy.SocketInternetObservingStrategy
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 import ru.beryukhov.reactivenetwork.network.observing.strategy.LollipopNetworkObservingStrategy
-import java.util.concurrent.Callable
-import kotlin.test.assertEquals
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
