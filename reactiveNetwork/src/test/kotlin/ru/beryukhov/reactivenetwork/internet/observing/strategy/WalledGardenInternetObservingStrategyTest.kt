@@ -91,58 +91,59 @@ class WalledGardenInternetObservingStrategyTest : BaseFlowTest() {
         }
     }
 
-    //Single methods are commented
-    /*@Test
+    @Test
     fun shouldBeConnectedToTheInternetViaSingle() { // given
-        val errorHandlerStub =
-            createErrorHandlerStub()
-        Mockito.`when`(
-            strategy!!.isConnected(
+        val errorHandlerStub = createErrorHandlerStub()
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
             )
-        ).thenReturn(true)
-        // when
-        val observable: Single<Boolean> = strategy.checkInternetConnectivity(
-            host,
-            PORT,
-            TIMEOUT_IN_MS,
-            HTTP_RESPONSE,
-            errorHandlerStub
-        )
-        val isConnected: Boolean = observable.blockingGet()
-        // then
-        Truth.assertThat(isConnected).isTrue()
+        } returns true
+
+        runBlocking {
+            // when
+            val isConnected = strategy.checkInternetConnectivity(
+                host,
+                PORT,
+                TIMEOUT_IN_MS,
+                HTTP_RESPONSE,
+                errorHandlerStub
+            )
+            // then
+            Truth.assertThat(isConnected).isTrue()
+        }
     }
 
     @Test
     fun shouldNotBeConnectedToTheInternetViaSingle() { // given
         val errorHandlerStub =
             createErrorHandlerStub()
-        Mockito.`when`(
-            strategy!!.isConnected(
+        every {
+            strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 HTTP_RESPONSE,
                 errorHandlerStub
             )
-        ).thenReturn(false)
-        // when
-        val observable: Single<Boolean> = strategy.checkInternetConnectivity(
-            host,
-            PORT,
-            TIMEOUT_IN_MS,
-            HTTP_RESPONSE,
-            errorHandlerStub
-        )
-        val isConnected: Boolean = observable.blockingGet()
-        // then
-        Truth.assertThat(isConnected).isFalse()
-    }*/
+        } returns false
+        runBlocking {
+            // when
+            val isConnected = strategy.checkInternetConnectivity(
+                host,
+                PORT,
+                TIMEOUT_IN_MS,
+                HTTP_RESPONSE,
+                errorHandlerStub
+            )
+            // then
+            Truth.assertThat(isConnected).isFalse()
+        }
+    }
 
     @Test
     @Throws(IOException::class)

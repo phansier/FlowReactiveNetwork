@@ -10,6 +10,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -126,52 +127,53 @@ class SocketInternetObservingStrategyTest : BaseFlowTest() {
         verify(exactly = 1) { errorHandler.handleError(givenException, errorMsg) }
     }
 
-    //Single methods are commented out
-    /*@Test
+    @Test
     fun shouldBeConnectedToTheInternetViaSingle() { // given
-        Mockito.`when`(
+        every {
             strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 errorHandler
             )
-        ).thenReturn(true)
-        // when
-        val observable: Single<Boolean> = strategy.checkInternetConnectivity(
-            host,
-            PORT,
-            TIMEOUT_IN_MS,
-            HTTP_RESPONSE,
-            errorHandler
-        )
-        val isConnected: Boolean = observable.blockingGet()
-        // then
-        Truth.assertThat(isConnected).isTrue()
+        } returns true
+        runBlocking {
+            // when
+            val isConnected = strategy.checkInternetConnectivity(
+                host,
+                PORT,
+                TIMEOUT_IN_MS,
+                HTTP_RESPONSE,
+                errorHandler
+            )
+            // then
+            Truth.assertThat(isConnected).isTrue()
+        }
     }
 
     @Test
     fun shouldNotBeConnectedToTheInternetViaSingle() { // given
-        Mockito.`when`(
+        every {
             strategy.isConnected(
                 host,
                 PORT,
                 TIMEOUT_IN_MS,
                 errorHandler
             )
-        ).thenReturn(false)
-        // when
-        val observable: Single<Boolean> = strategy.checkInternetConnectivity(
-            host,
-            PORT,
-            TIMEOUT_IN_MS,
-            HTTP_RESPONSE,
-            errorHandler
-        )
-        val isConnected: Boolean = observable.blockingGet()
-        // then
-        Truth.assertThat(isConnected).isFalse()
-    }*/
+        } returns false
+        runBlocking {
+            // when
+            val isConnected = strategy.checkInternetConnectivity(
+                host,
+                PORT,
+                TIMEOUT_IN_MS,
+                HTTP_RESPONSE,
+                errorHandler
+            )
+            // then
+            Truth.assertThat(isConnected).isFalse()
+        }
+    }
 
     @Test
     fun shouldNotTransformHost() { // when

@@ -47,18 +47,18 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
         ).map { isConnected(adjustedHost, port, timeoutInMs, errorHandler) }.distinctUntilChanged()
 
     }
-    /*@Override
-  public Single<Boolean> checkInternetConnectivity(final String host, final int port,
-                                                   final int timeoutInMs, final int httpResponse, final ErrorHandler errorHandler) {
-    checkGeneralPreconditions(host, port, timeoutInMs, errorHandler);
 
-    return Single.create(new SingleOnSubscribe<Boolean>() {
-      @Override
-      public void subscribe(@NotNull SingleEmitter<Boolean> emitter) throws Exception {
-        emitter.onSuccess(isConnected(host, port, timeoutInMs, errorHandler));
-      }
-    });
-  }*/
+    override suspend fun checkInternetConnectivity(
+        host: String,
+        port: Int,
+        timeoutInMs: Int,
+        httpResponse: Int,
+        errorHandler: ErrorHandler
+    ): Boolean {
+        checkGeneralPreconditions(host, port, timeoutInMs, errorHandler)
+        return isConnected(host, port, timeoutInMs, errorHandler)
+    }
+
     /**
      * adjusts host to needs of SocketInternetObservingStrategy
      *

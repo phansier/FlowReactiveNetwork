@@ -93,45 +93,6 @@ class ReactiveNetworkTest: BaseFlowTest() {
         }
     }
 
-    //Next tests are commented out because nullability checks made by Kotlin
-
-    /*@Test(expected = IllegalArgumentException::class)
-    fun observeNetworkConnectivityShouldThrowAnExceptionForNullContext() { // given
-        val context: Context? = null
-        val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
-        // when
-        ReactiveNetwork.create().observeNetworkConnectivity(context, strategy)
-        // then an exception is thrown
-    }*/
-
-    /*@Test(expected = IllegalArgumentException::class)
-    fun observeNetworkConnectivityShouldThrowAnExceptionForNullStrategy() { // given
-        val context: Context = RuntimeEnvironment.application
-        val strategy: NetworkObservingStrategy? = null
-        // when
-        ReactiveNetwork.create().observeNetworkConnectivity(context, strategy)
-        // then an exception is thrown
-    }*/
-
-    /*@Test(expected = IllegalArgumentException::class)
-    fun observeInternetConnectivityShouldThrowAnExceptionWhenStrategyIsNull() { // given
-        val strategy: InternetObservingStrategy? = null
-        val errorHandler: ErrorHandler =
-            DefaultErrorHandler()
-        // when
-        ReactiveNetwork.create().observeInternetConnectivity(
-            strategy,
-            TEST_VALID_INITIAL_INTERVAL,
-            TEST_VALID_INTERVAL,
-            TEST_VALID_HOST,
-            TEST_VALID_PORT,
-            TEST_VALID_TIMEOUT,
-            TEST_VALID_HTTP_RESPONSE,
-            errorHandler
-        )
-        // then an exception is thrown
-    }*/
-
     @Test
     fun observeInternetConnectivityShouldNotThrowAnExceptionWhenStrategyIsNotNull() { // given
         val strategy: InternetObservingStrategy = SocketInternetObservingStrategy()
@@ -151,42 +112,6 @@ class ReactiveNetworkTest: BaseFlowTest() {
         // then
         assertThat(observable).isNotNull()
     }
-
-    //Single methods tests are commented out because Single should be replaced with suspend functions
-
-    /*@Test(expected = IllegalArgumentException::class)
-        fun checkInternetConnectivityShouldThrowAnExceptionWhenStrategyIsNull() { // given
-            val errorHandler: ErrorHandler =
-                DefaultErrorHandler()
-            // when
-            ReactiveNetwork.create().checkInternetConnectivity(
-                null,
-                TEST_VALID_HOST,
-                TEST_VALID_PORT,
-                TEST_VALID_TIMEOUT,
-                TEST_VALID_HTTP_RESPONSE,
-                errorHandler
-            )
-            // then an exception is thrown
-        }
-
-        @Test
-        fun checkInternetConnectivityShouldNotThrowAnExceptionWhenStrategyIsNotNull() { // given
-            val strategy: InternetObservingStrategy = SocketInternetObservingStrategy()
-            val errorHandler: ErrorHandler =
-                DefaultErrorHandler()
-            // when
-            val single: Single<Boolean> = ReactiveNetwork.create().checkInternetConnectivity(
-                strategy,
-                TEST_VALID_HOST,
-                TEST_VALID_PORT,
-                TEST_VALID_TIMEOUT,
-                TEST_VALID_HTTP_RESPONSE,
-                errorHandler
-            )
-            // then
-            assertThat(single).isNotNull()
-    }*/
 
     @Test
     fun shouldObserveInternetConnectivityWithCustomSettings() { // given
@@ -214,33 +139,6 @@ class ReactiveNetworkTest: BaseFlowTest() {
         assertThat(observable).isNotNull()
     }
 
-    /*@Test
-    fun shouldCheckInternetConnectivityWithCustomSettings() { // given
-        val initialInterval = 1
-        val interval = 2
-        val host = "www.test.com"
-        val port = 90
-        val timeout = 3
-        val httpResponse = 200
-        val testErrorHandler =
-            createTestErrorHandler()
-        val strategy = createTestInternetObservingStrategy()
-        // when
-        val settings = builder()
-            .initialInterval(initialInterval)
-            .interval(interval)
-            .host(host)
-            .port(port)
-            .timeout(timeout)
-            .httpResponse(httpResponse)
-            .errorHandler(testErrorHandler)
-            .strategy(strategy)
-            .build()
-        // then
-        val single: Single<Boolean> = ReactiveNetwork.checkInternetConnectivity(settings)
-        assertThat(single).isNotNull()
-    }*/
-
     private fun createTestInternetObservingStrategy(): InternetObservingStrategy {
         return object : InternetObservingStrategy {
             override fun observeInternetConnectivity(
@@ -255,15 +153,15 @@ class ReactiveNetworkTest: BaseFlowTest() {
                 return flow {}
             }
 
-            /*fun checkInternetConnectivity(
-                host: String?,
+            override suspend fun checkInternetConnectivity(
+                host: String,
                 port: Int,
                 timeoutInMs: Int,
                 httpResponse: Int,
-                errorHandler: ErrorHandler?
-            ): Single<Boolean> {
-                return Single.fromCallable(Callable { true })
-            }*/
+                errorHandler: ErrorHandler
+            ): Boolean {
+                return true
+            }
 
             override fun getDefaultPingHost(): String {
                 return "null"
@@ -279,18 +177,6 @@ class ReactiveNetworkTest: BaseFlowTest() {
             ) {
             }
         }
-    }
-
-    @Test
-    fun shouldHaveJustSevenMethodsInPublicApi() { // given
-        val clazz: Class<out ReactiveNetwork> = create().javaClass
-        val predefinedNumberOfMethods = 9
-        // should be 7. 2 methods are commented out because of Single
-        val publicMethodsInApi = 5 // this number can be increased only in reasonable case
-        // when
-        val methods = clazz.methods
-        // then
-        assertThat(methods.size).isEqualTo(predefinedNumberOfMethods + publicMethodsInApi)
     }
 
     companion object {

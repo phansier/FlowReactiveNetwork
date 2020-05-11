@@ -51,19 +51,17 @@ class WalledGardenInternetObservingStrategy : InternetObservingStrategy {
         )}.distinctUntilChanged()
     }
 
-    /*@Override
-  public Single<Boolean> checkInternetConnectivity(final String host, final int port,
-                                                   final int timeoutInMs, final int httpResponse, final ErrorHandler errorHandler) {
-    checkGeneralPreconditions(host, port, timeoutInMs, httpResponse, errorHandler);
+    override suspend fun checkInternetConnectivity(
+        host: String,
+        port: Int,
+        timeoutInMs: Int,
+        httpResponse: Int,
+        errorHandler: ErrorHandler
+    ): Boolean {
+        checkGeneralPreconditions(host, port, timeoutInMs, httpResponse, errorHandler)
+        return isConnected(host, port, timeoutInMs, httpResponse, errorHandler)
+    }
 
-    return Single.create(new SingleOnSubscribe<Boolean>() {
-      @Override
-      public void subscribe(@NotNull SingleEmitter<Boolean> emitter) {
-        emitter.onSuccess(isConnected(host, port, timeoutInMs, httpResponse, errorHandler));
-      }
-    });
-  }
-*/
     internal fun adjustHost(host: String): String {
         return if (!host.startsWith(HTTP_PROTOCOL) && !host.startsWith(
                 HTTPS_PROTOCOL
@@ -136,10 +134,8 @@ class WalledGardenInternetObservingStrategy : InternetObservingStrategy {
         timeoutInMs: Int
     ): HttpURLConnection {
         val initialUrl = URL(host)
-        val url =
-            URL(initialUrl.protocol, initialUrl.host, port, initialUrl.file)
-        val urlConnection =
-            url.openConnection() as HttpURLConnection
+        val url = URL(initialUrl.protocol, initialUrl.host, port, initialUrl.file)
+        val urlConnection = url.openConnection() as HttpURLConnection
         urlConnection.connectTimeout = timeoutInMs
         urlConnection.readTimeout = timeoutInMs
         urlConnection.instanceFollowRedirects = false

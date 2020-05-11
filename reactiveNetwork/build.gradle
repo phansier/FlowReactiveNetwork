@@ -27,6 +27,8 @@ android {
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
+        implementation "androidx.annotation:annotation:1.1.0"
+
 
         testImplementation "org.jetbrains.kotlin:kotlin-test-common:$kotlin_version"
         testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlin_version"

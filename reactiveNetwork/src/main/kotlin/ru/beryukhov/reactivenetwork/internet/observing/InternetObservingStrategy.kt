@@ -19,7 +19,7 @@ interface InternetObservingStrategy {
      * @param port for checking Internet connectivity
      * @param timeoutInMs for pinging remote host in milliseconds
      * @param errorHandler for handling errors while checking connectivity
-     * @return RxJava Observable with Boolean - true, when we have connection with host and false if
+     * @return Flow with Boolean - true, when we have connection with host and false if
      * not
      */
     fun observeInternetConnectivity(
@@ -31,6 +31,7 @@ interface InternetObservingStrategy {
         httpResponse: Int,
         errorHandler: ErrorHandler
     ): Flow<Boolean>
+
     /**
      * Observes connectivity with the Internet by opening socket connection with remote host once
      *
@@ -38,11 +39,14 @@ interface InternetObservingStrategy {
      * @param port for checking Internet connectivity
      * @param timeoutInMs for pinging remote host in milliseconds
      * @param errorHandler for handling errors while checking connectivity
-     * @return RxJava Single with Boolean - true, when we have connection with host and false if
+     * @return  Boolean - true, when we have connection with host and false if
      * not
      */
-/*Single<Boolean> checkInternetConnectivity(final String host, final int port,
-                                            final int timeoutInMs, final int httpResponse, final ErrorHandler errorHandler);*/
+    suspend fun checkInternetConnectivity(
+        host: String, port: Int,
+        timeoutInMs: Int, httpResponse: Int, errorHandler: ErrorHandler
+    ): Boolean
+
     /**
      * Gets default remote ping host for a given Internet Observing Strategy
      *

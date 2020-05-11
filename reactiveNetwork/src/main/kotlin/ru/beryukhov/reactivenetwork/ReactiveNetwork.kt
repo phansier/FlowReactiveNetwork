@@ -1,6 +1,8 @@
 package ru.beryukhov.reactivenetwork
 
+import android.Manifest
 import android.content.Context
+import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.flow.Flow
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingSettings
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
@@ -13,19 +15,19 @@ import ru.beryukhov.reactivenetwork.network.observing.strategy.PreLollipopNetwor
 /**
  * ReactiveNetwork is an Android library
  * listening network connection state and change of the WiFi signal strength
- * with RxJava Observables. It can be easily used with RxAndroid.
+ * with Coroutines Flow. It was backported from ReactiveNewtwork with Java and RxJava inside.
  */
-class ReactiveNetwork constructor() {
+class ReactiveNetwork {
     /**
      * Observes network connectivity. Information about network state, type and typeName are contained
      * in
      * observed Connectivity object.
      *
      * @param context Context of the activity or an application
-     * @return RxJava Observable with Connectivity class containing information about network state,
+     * @return Flow with Connectivity class containing information about network state,
      * type and typeName
      */
-//@RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val strategy: NetworkObservingStrategy = when {
             Preconditions.isAtLeastAndroidMarshmallow() -> {
@@ -49,10 +51,10 @@ class ReactiveNetwork constructor() {
      * @param strategy NetworkObserving strategy to be applied - you can use one of the existing
      * strategies [PreLollipopNetworkObservingStrategy],
      * [LollipopNetworkObservingStrategy] or create your own custom strategy
-     * @return RxJava Observable with Connectivity class containing information about network state,
+     * @return Flow with Connectivity class containing information about network state,
      * type and typeName
      */
-//@RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun observeNetworkConnectivity(
         context: Context,
         strategy: NetworkObservingStrategy
@@ -69,10 +71,10 @@ class ReactiveNetwork constructor() {
      * less efficient than [.observeNetworkConnectivity] method and consumes data
      * transfer, but it gives you actual information if device is connected to the Internet or not.
      *
-     * @return RxJava Observable with Boolean - true, when we have an access to the Internet
+     * @return Flow with Boolean - true, when we have an access to the Internet
      * and false if not
      */
-//@RequiresPermission(Manifest.permission.INTERNET)
+    @RequiresPermission(Manifest.permission.INTERNET)
     fun observeInternetConnectivity(): Flow<Boolean> {
         val settings = InternetObservingSettings.create()
         return observeInternetConnectivity(
@@ -86,10 +88,10 @@ class ReactiveNetwork constructor() {
      * Observes connectivity with the Internet in a given time interval.
      *
      * @param settings Internet Observing Settings created via Builder pattern
-     * @return RxJava Observable with Boolean - true, when we have connection with host and false if
+     * @return Flow with Boolean - true, when we have connection with host and false if
      * not
      */
-//@RequiresPermission(Manifest.permission.INTERNET)
+    @RequiresPermission(Manifest.permission.INTERNET)
     fun observeInternetConnectivity(
         settings: InternetObservingSettings
     ): Flow<Boolean> {
@@ -112,10 +114,10 @@ class ReactiveNetwork constructor() {
      * @param timeoutInMs for pinging remote host in milliseconds
      * @param httpResponse expected HTTP response code indicating that connection is established
      * @param errorHandler for handling errors during connectivity check
-     * @return RxJava Observable with Boolean - true, when we have connection with host and false if
+     * @return Flow with Boolean - true, when we have connection with host and false if
      * not
      */
-//@RequiresPermission(Manifest.permission.INTERNET)
+    @RequiresPermission(Manifest.permission.INTERNET)
     internal fun observeInternetConnectivity(
         strategy: InternetObservingStrategy,
         initialIntervalInMs: Int,
@@ -136,47 +138,62 @@ class ReactiveNetwork constructor() {
     /**
      * Checks connectivity with the Internet. This operation is performed only once.
      *
-     * @return RxJava Single with Boolean - true, when we have an access to the Internet
+     * @return Boolean - true, when we have an access to the Internet
      * and false if not
      */
-/* @RequiresPermission(Manifest.permission.INTERNET)
-  public static Single<Boolean> checkInternetConnectivity() {
-    InternetObservingSettings settings = InternetObservingSettings.create();
-    return checkInternetConnectivity(settings.strategy(), settings.host(), settings.port(),
-        settings.timeout(), settings.httpResponse(), settings.errorHandler());
-  }*/
-/*
-   * Checks connectivity with the Internet. This operation is performed only once.
-   *
-   * @param settings Internet Observing Settings created via Builder pattern
-   * @return RxJava Single with Boolean - true, when we have connection with host and false if
-   * not
-   */
-/*@RequiresPermission(Manifest.permission.INTERNET)
-  public static Single<Boolean> checkInternetConnectivity(InternetObservingSettings settings) {
-    return checkInternetConnectivity(settings.strategy(), settings.host(), settings.port(),
-        settings.timeout(), settings.httpResponse(), settings.errorHandler());
-  }*/
-/*
-   * Checks connectivity with the Internet. This operation is performed only once.
-   *
-   * @param strategy for observing Internet connectivity
-   * @param host for checking Internet connectivity
-   * @param port for checking Internet connectivity
-   * @param timeoutInMs for pinging remote host in milliseconds
-   * @param httpResponse expected HTTP response code indicating that connection is established
-   * @param errorHandler for handling errors during connectivity check
-   * @return RxJava Single with Boolean - true, when we have connection with host and false if
-   * not
-   */
-/*@RequiresPermission(Manifest.permission.INTERNET)
-  protected static Single<Boolean> checkInternetConnectivity(
-          final InternetObservingStrategy strategy,
-          final String host, final int port, final int timeoutInMs, final int httpResponse,
-          final ErrorHandler errorHandler) {
-    checkStrategyIsNotNull(strategy);
-    return strategy.checkInternetConnectivity(host, port, timeoutInMs, httpResponse, errorHandler);
-  }*/
+    @RequiresPermission(Manifest.permission.INTERNET)
+    suspend fun checkInternetConnectivity(): Boolean {
+        val settings = InternetObservingSettings.create();
+        return checkInternetConnectivity(
+            settings.strategy(), settings.host(), settings.port(),
+            settings.timeout(), settings.httpResponse(), settings.errorHandler()
+        )
+    }
+
+    /**
+     * Checks connectivity with the Internet. This operation is performed only once.
+     *
+     * @param settings Internet Observing Settings created via Builder pattern
+     * @return Boolean - true, when we have connection with host and false if
+     * not
+     */
+    @RequiresPermission(Manifest.permission.INTERNET)
+    suspend fun checkInternetConnectivity(settings: InternetObservingSettings): Boolean {
+        return checkInternetConnectivity(
+            settings.strategy(), settings.host(), settings.port(),
+            settings.timeout(), settings.httpResponse(), settings.errorHandler()
+        )
+    }
+
+    /**
+     * Checks connectivity with the Internet. This operation is performed only once.
+     *
+     * @param strategy for observing Internet connectivity
+     * @param host for checking Internet connectivity
+     * @param port for checking Internet connectivity
+     * @param timeoutInMs for pinging remote host in milliseconds
+     * @param httpResponse expected HTTP response code indicating that connection is established
+     * @param errorHandler for handling errors during connectivity check
+     * @return Boolean - true, when we have connection with host and false if
+     * not
+     */
+    @RequiresPermission(Manifest.permission.INTERNET)
+    internal suspend fun checkInternetConnectivity(
+
+        strategy: InternetObservingStrategy,
+        host: String, port: Int, timeoutInMs: Int, httpResponse: Int,
+        errorHandler: ErrorHandler
+    ): Boolean {
+        checkStrategyIsNotNull(strategy);
+        return strategy.checkInternetConnectivity(
+            host,
+            port,
+            timeoutInMs,
+            httpResponse,
+            errorHandler
+        )
+    }
+
     private fun checkStrategyIsNotNull(strategy: InternetObservingStrategy) {
         Preconditions.checkNotNull(strategy, "strategy == null")
     }
