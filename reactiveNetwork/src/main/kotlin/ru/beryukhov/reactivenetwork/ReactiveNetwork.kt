@@ -30,7 +30,7 @@ import ru.beryukhov.reactivenetwork.network.observing.strategy.PreLollipopNetwor
  * listening network connection state and change of the WiFi signal strength
  * with RxJava Observables. It can be easily used with RxAndroid.
  */
-class ReactiveNetwork protected constructor() {
+class ReactiveNetwork constructor() {
     /**
      * Observes network connectivity. Information about network state, type and typeName are contained
      * in

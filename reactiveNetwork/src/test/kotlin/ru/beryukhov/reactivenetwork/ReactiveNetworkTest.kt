@@ -108,7 +108,7 @@ class ReactiveNetworkTest {
             val context = RuntimeEnvironment.application
             // when
             val connectivityFlow =
-                ReactiveNetwork.create().observeNetworkConnectivity(context).map{it.state()}.testIn(scope = this)
+                ReactiveNetwork.create().observeNetworkConnectivity(context).map{it.state}.testIn(scope = this)
             // then
             connectivityFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
         }

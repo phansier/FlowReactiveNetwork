@@ -34,7 +34,7 @@ object ConnectivityPredicate {
             @Throws(Exception::class)
             override fun test(connectivity: Connectivity): Boolean {
                 for (state in states) {
-                    if (connectivity.state() == state) {
+                    if (connectivity.state == state) {
                         return true
                     }
                 }
@@ -57,7 +57,7 @@ object ConnectivityPredicate {
             @Throws(Exception::class)
             override fun test(connectivity: Connectivity): Boolean {
                 for (type in extendedTypes) {
-                    if (connectivity.type() == type) {
+                    if (connectivity.type == type) {
                         return true
                     }
                 }

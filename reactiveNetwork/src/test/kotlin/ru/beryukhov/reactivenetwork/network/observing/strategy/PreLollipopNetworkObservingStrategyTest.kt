@@ -53,7 +53,7 @@ open class PreLollipopNetworkObservingStrategyTest {
         // when
         runBlockingTest {
             val testFlow =
-                strategy.observeNetworkConnectivity(context).map { it.state() }.testIn(scope = this)
+                strategy.observeNetworkConnectivity(context).map { it.state }.testIn(scope = this)
             advanceTimeBy(1000)
             // then
             testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)

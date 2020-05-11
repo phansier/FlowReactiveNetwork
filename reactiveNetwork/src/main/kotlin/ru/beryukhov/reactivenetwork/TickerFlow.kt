@@ -20,7 +20,7 @@ import kotlin.concurrent.schedule
  * @param initialDelay delay after which the first element will be produced (it is equal to [period] by default) in milliseconds.
  */
 @ExperimentalCoroutinesApi
-public fun tickerFlow(
+internal fun tickerFlow(
     period: Long,
     initialDelay: Long = period
 ): Flow<Unit> = callbackFlow {

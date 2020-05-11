@@ -55,11 +55,11 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     private val powerManager = mockk<PowerManager>(relaxed = true)
     private val connectivityManager = mockk<ConnectivityManager>(relaxed = true)
-    private val contextMock = mockk <Context>(relaxed = true)
-    private val intent = mockk <Intent>(relaxed = true)
-    private val network = mockk <Network>(relaxed = true)
+    private val contextMock = mockk<Context>(relaxed = true)
+    private val intent = mockk<Intent>(relaxed = true)
+    private val network = mockk<Network>(relaxed = true)
 
-    private lateinit var context : Context
+    private lateinit var context: Context
 
     @Before
     fun setUp() {
@@ -72,7 +72,8 @@ open class MarshmallowNetworkObservingStrategyTest {
             RuntimeEnvironment.application.applicationContext
         // when
         runBlockingTest {
-            val testFlow = strategy.observeNetworkConnectivity(context).map { it.state() }.testIn(scope = this)
+            val testFlow =
+                strategy.observeNetworkConnectivity(context).map { it.state }.testIn(scope = this)
             // then
             testFlow expect emission(index = 0, expected = NetworkInfo.State.CONNECTED)
         }
@@ -95,7 +96,7 @@ open class MarshmallowNetworkObservingStrategyTest {
         // when
         strategy.onError(message, exception)
         // then
-        verify(exactly = 1){strategy.onError(message, exception)}
+        verify(exactly = 1) { strategy.onError(message, exception) }
     }
 
     @Test
@@ -103,7 +104,7 @@ open class MarshmallowNetworkObservingStrategyTest {
         // when
         runBlockingTest {
             val testFlow =
-                strategy.observeNetworkConnectivity(context!!).testIn(scope = this)
+                strategy.observeNetworkConnectivity(context).testIn(scope = this)
             this.cancel()
 
             // then
@@ -115,7 +116,7 @@ open class MarshmallowNetworkObservingStrategyTest {
     fun shouldTryToUnregisterReceiverOnDispose() { // given
         // when
         runBlockingTest {
-            val testFlow = strategy.observeNetworkConnectivity(context!!).testIn(scope = this)
+            val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = this)
             this.cancel()
 
             // then
@@ -185,10 +186,10 @@ open class MarshmallowNetworkObservingStrategyTest {
         ignoreOptimizations: Boolean
     ) {
         val packageName = "com.github.pwittchen.test"
-        every{contextMock.packageName} returns packageName
-        every{contextMock.getSystemService(Context.POWER_SERVICE)} returns powerManager
-        every{powerManager.isDeviceIdleMode} returns idleMode
-        every{powerManager.isIgnoringBatteryOptimizations(packageName)} returns ignoreOptimizations
+        every { contextMock.packageName } returns packageName
+        every { contextMock.getSystemService(Context.POWER_SERVICE) } returns powerManager
+        every { powerManager.isDeviceIdleMode } returns idleMode
+        every { powerManager.isIgnoringBatteryOptimizations(packageName) } returns ignoreOptimizations
     }
 
     @Test
@@ -198,18 +199,18 @@ open class MarshmallowNetworkObservingStrategyTest {
             val testFlow = strategy.observeNetworkConnectivity(context).testIn(scope = this)
 
             // then
-            verify{strategy.createNetworkCallback(context)}
+            verify { strategy.createNetworkCallback(context) }
         }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Test
     fun shouldInvokeOnNextOnNetworkAvailable() { // given
-        val networkCallback = strategy.createNetworkCallback(context!!)
+        val networkCallback = strategy.createNetworkCallback(context)
         // when
         networkCallback.onAvailable(network)
         // then
-        verify{strategy.onNext(any())}
+        verify { strategy.onNext(any()) }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -219,15 +220,15 @@ open class MarshmallowNetworkObservingStrategyTest {
         // when
         networkCallback.onLost(network)
         // then
-        verify{strategy.onNext(any())}
+        verify { strategy.onNext(any()) }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Test
     fun shouldHandleErrorWhileTryingToUnregisterCallback() { // given
-        strategy.observeNetworkConnectivity(context!!)
+        strategy.observeNetworkConnectivity(context)
         val exception = IllegalArgumentException()
-        every{connectivityManager.unregisterNetworkCallback(any<NetworkCallback>())} throws exception
+        every { connectivityManager.unregisterNetworkCallback(any<NetworkCallback>()) } throws exception
         // when
         strategy.tryToUnregisterCallback(connectivityManager)
         // then
@@ -241,13 +242,18 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldHandleErrorWhileTryingToUnregisterReceiver() { // given
-        strategy.observeNetworkConnectivity(context!!)
+        strategy.observeNetworkConnectivity(context)
         val exception = RuntimeException()
-        every{contextMock.unregisterReceiver(any())} throws exception
+        every { contextMock.unregisterReceiver(any()) } throws exception
         // when
         strategy.tryToUnregisterReceiver(contextMock)
         // then
-        verify { strategy.onError(MarshmallowNetworkObservingStrategy.ERROR_MSG_RECEIVER, exception)}
+        verify {
+            strategy.onError(
+                MarshmallowNetworkObservingStrategy.ERROR_MSG_RECEIVER,
+                exception
+            )
+        }
     }
 
     @Test
@@ -267,15 +273,15 @@ open class MarshmallowNetworkObservingStrategyTest {
     private fun assertThatConnectivityIsPropagatedDuringChange(
         lastType: Int, currentType: Int
     ) { // given
-        val last = Connectivity.Builder()
-            .type(lastType)
-            .state(NetworkInfo.State.CONNECTED)
-            .build()
-        val current = Connectivity.Builder()
-            .type(currentType)
-            .state(NetworkInfo.State.DISCONNECTED)
-            .detailedState(NetworkInfo.DetailedState.CONNECTED)
-            .build()
+        val last = Connectivity(
+            type = lastType,
+            state = NetworkInfo.State.CONNECTED
+        )
+        val current = Connectivity(
+            type = currentType,
+            state = NetworkInfo.State.DISCONNECTED,
+            detailedState = NetworkInfo.DetailedState.CONNECTED
+        )
         // when
         runBlockingTest {
             val testFlow =
@@ -288,15 +294,15 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldNotPropagateLastConnectivityEventWhenTypeIsNotChanged() { // given
-        val last = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_WIFI)
-            .state(NetworkInfo.State.CONNECTED)
-            .build()
-        val current = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_WIFI)
-            .state(NetworkInfo.State.DISCONNECTED)
-            .detailedState(NetworkInfo.DetailedState.CONNECTED)
-            .build()
+        val last = Connectivity(
+            type = ConnectivityManager.TYPE_WIFI,
+            state = NetworkInfo.State.CONNECTED
+        )
+        val current = Connectivity(
+            type = ConnectivityManager.TYPE_WIFI,
+            state = NetworkInfo.State.DISCONNECTED,
+            detailedState = NetworkInfo.DetailedState.CONNECTED
+        )
         // when
         runBlockingTest {
             val testFlow =
@@ -310,15 +316,15 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldNotPropagateLastConnectivityWhenWasNotConnected() { // given
-        val last = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_WIFI)
-            .state(NetworkInfo.State.DISCONNECTED)
-            .build()
-        val current = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_MOBILE)
-            .state(NetworkInfo.State.CONNECTED)
-            .detailedState(NetworkInfo.DetailedState.CONNECTED)
-            .build()
+        val last = Connectivity(
+            type = ConnectivityManager.TYPE_WIFI,
+            state = NetworkInfo.State.DISCONNECTED
+        )
+        val current = Connectivity(
+            type = ConnectivityManager.TYPE_MOBILE,
+            state = NetworkInfo.State.CONNECTED,
+            detailedState = NetworkInfo.DetailedState.CONNECTED
+        )
         // when
         runBlockingTest {
             val testFlow =
@@ -332,15 +338,15 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldNotPropagateLastConnectivityWhenIsConnected() { // given
-        val last = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_WIFI)
-            .state(NetworkInfo.State.CONNECTED)
-            .build()
-        val current = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_MOBILE)
-            .state(NetworkInfo.State.CONNECTED)
-            .detailedState(NetworkInfo.DetailedState.CONNECTED)
-            .build()
+        val last = Connectivity(
+            type = ConnectivityManager.TYPE_WIFI,
+            state = NetworkInfo.State.CONNECTED
+        )
+        val current = Connectivity(
+            type = ConnectivityManager.TYPE_MOBILE,
+            state = NetworkInfo.State.CONNECTED,
+            detailedState = NetworkInfo.DetailedState.CONNECTED
+        )
         // when
         runBlockingTest {
             val testFlow =
@@ -354,15 +360,15 @@ open class MarshmallowNetworkObservingStrategyTest {
 
     @Test
     fun shouldNotPropagateLastConnectivityWhenIsIdle() { // given
-        val last = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_WIFI)
-            .state(NetworkInfo.State.CONNECTED)
-            .build()
-        val current = Connectivity.Builder()
-            .type(ConnectivityManager.TYPE_MOBILE)
-            .state(NetworkInfo.State.DISCONNECTED)
-            .detailedState(NetworkInfo.DetailedState.IDLE)
-            .build()
+        val last = Connectivity(
+            type = ConnectivityManager.TYPE_WIFI,
+            state = NetworkInfo.State.CONNECTED
+        )
+        val current = Connectivity(
+            type = ConnectivityManager.TYPE_MOBILE,
+            state = NetworkInfo.State.DISCONNECTED,
+            detailedState = NetworkInfo.DetailedState.IDLE
+        )
         // when
         runBlockingTest {
             val testFlow = strategy.propagateAnyConnectedState(last, current).testIn(scope = this)
