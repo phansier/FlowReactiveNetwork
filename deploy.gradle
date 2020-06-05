@@ -1,0 +1,44 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+ext {
+    ver = '1.0.0'
+    groupId = 'ru.beryukhov'
+    artifactId = 'flowreactivenetwork'
+    repo = 'FlowReactiveNetwork'
+    repoName = 'FlowReactiveNetwork'
+    vcsUrl = 'https://github.com/AndreySBer/FlowReactiveNetwork.git'
+}
+
+publishing {
+    publications {
+        FlowReactiveNetwork(MavenPublication) {
+            artifact "$rootDir/reactiveNetwork/build/outputs/aar/reactiveNetwork-release.aar"
+            artifact "$rootDir/reactiveNetwork/build/libs/reactiveNetwork-sources.jar"
+            groupId this.groupId
+            artifactId this.artifactId
+            version this.ver
+        }
+    }
+}
+
+bintray {
+    user = property('bintrayuser')
+    key = property('bintraykey')
+    publications = ['FlowReactiveNetwork']
+
+    pkg {
+        repo = this.repo
+        name = this.repoName
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = this.vcsUrl
+
+        version {
+            name = this.ver
+            released = new Date()
+        }
+    }
+}
+
+bintrayUpload.dependsOn assemble
