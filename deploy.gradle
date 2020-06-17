@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply from : '../artifact-pom-manager.gradle'
 
 ext {
-    ver = '1.0.1'
+    ver = '1.0.2'
     groupId = 'ru.beryukhov'
     artifactId = 'flowreactivenetwork'
     repo = 'FlowReactiveNetwork'
