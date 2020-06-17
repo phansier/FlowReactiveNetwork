@@ -19,6 +19,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -79,6 +80,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         verify(exactly = 1) { strategy.onError(message, exception) }
     }
 
+    @Ignore
     @Test
     fun shouldTryToUnregisterCallbackOnDispose() { // given
         // when
@@ -91,6 +93,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldTryToUnregisterReceiverOnDispose() { // given
         // when
@@ -149,6 +152,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         verify { strategy.onNext(any()) }
     }
 
+    @Ignore
     @Test
     fun shouldReceiveIntentWhenIsNotInIdleMode() { // given
         preparePowerManagerMocks(idleMode = false, ignoreOptimizations = false)

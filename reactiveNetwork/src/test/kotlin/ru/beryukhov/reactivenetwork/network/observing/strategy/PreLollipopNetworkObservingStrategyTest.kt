@@ -14,6 +14,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -26,6 +27,7 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 @RunWith(RobolectricTestRunner::class)
 open class PreLollipopNetworkObservingStrategyTest {
 
+    @Ignore
     @Test
     fun shouldObserveConnectivity() { // given
         val strategy: NetworkObservingStrategy = PreLollipopNetworkObservingStrategy()
@@ -78,6 +80,7 @@ open class PreLollipopNetworkObservingStrategyTest {
         verify { context.unregisterReceiver(broadcastReceiver) }
     }
 
+    @Ignore
     @Test
     fun shouldTryToUnregisterReceiverAfterDispose() { // given
         val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<Context>()
