@@ -16,7 +16,16 @@ You can depend on the library through Gradle:
 
 ```groovy
 dependencies {
-    implementation 'ru.beryukhov:flowreactivenetwork:1.0.0'
+    implementation 'ru.beryukhov:flowreactivenetwork:1.0.2'
+}
+// as for the library is not available in jcenter yet
+allprojects {
+    repositories {
+        //...
+        maven {
+            url "https://dl.bintray.com/andreyberyukhov/FlowReactiveNetwork"
+        }
+    }
 }
 ```
 
