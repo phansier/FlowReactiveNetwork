@@ -1,5 +1,6 @@
 # ReactiveNetwork on Coroutines
 [![Download](https://api.bintray.com/packages/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/images/download.svg) ](https://bintray.com/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/_latestVersion)
+![CI](https://github.com/AndreySBer/FlowReactiveNetwork/workflows/Android%20CI/badge.svg)
 
 ReactiveNetwork is an Android library listening **network connection state** and **Internet connectivity** with Coroutines Flow. It's a port of [ReactiveNetwork](https://github.com/pwittchen/ReactiveNetwork) library rewritten with Reactive Programming approach. Library supports both new and legacy network monitoring strategies. Min sdk version = 14.
 
