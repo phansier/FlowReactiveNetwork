@@ -7,6 +7,7 @@ import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.map
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -26,6 +27,7 @@ class NetworkObservingStrategyTest: BaseFlowTest() {
         assertThatIsConnected(strategy)
     }
 
+    @Ignore
     @Test
     fun preLollipopObserveNetworkConnectivityShouldBeConnectedWhenNetworkIsAvailable() { // given
         val strategy: NetworkObservingStrategy = PreLollipopNetworkObservingStrategy()

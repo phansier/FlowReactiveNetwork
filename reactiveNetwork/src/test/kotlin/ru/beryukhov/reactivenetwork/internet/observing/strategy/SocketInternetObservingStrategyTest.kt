@@ -11,6 +11,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -32,6 +33,7 @@ class SocketInternetObservingStrategyTest : BaseFlowTest() {
 
     private val host: String = strategy.getDefaultPingHost()
 
+    @Ignore
     @Test
     fun shouldBeConnectedToTheInternet() { // given
         every {
@@ -60,6 +62,7 @@ class SocketInternetObservingStrategyTest : BaseFlowTest() {
 
     }
 
+    @Ignore
     @Test
     fun shouldNotBeConnectedToTheInternet() { // given
         every {
