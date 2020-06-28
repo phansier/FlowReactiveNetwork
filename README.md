@@ -1,5 +1,6 @@
 # FlowReactiveNetwork on Coroutines
 [![Download](https://api.bintray.com/packages/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/images/download.svg) ](https://bintray.com/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/_latestVersion)
+[![kotlinweekly](https://img.shields.io/badge/kotlinweekly.net-204-blue.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-204)
 ![CI](https://github.com/AndreySBer/FlowReactiveNetwork/workflows/Android%20CI/badge.svg)
 
 FlowReactiveNetwork is an Android library listening **network connection state** and **Internet connectivity** with Coroutines Flow. It's a port of [ReactiveNetwork](https://github.com/pwittchen/ReactiveNetwork) library rewritten with Reactive Programming approach. Library supports both new and legacy network monitoring strategies. Min sdk version = 14.
