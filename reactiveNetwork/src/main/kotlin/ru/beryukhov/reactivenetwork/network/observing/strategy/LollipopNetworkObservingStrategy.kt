@@ -27,7 +27,7 @@ class LollipopNetworkObservingStrategy : NetworkObservingStrategy {
     override fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val service = Context.CONNECTIVITY_SERVICE
         val manager = context.getSystemService(service) as ConnectivityManager
-        return callbackFlow {
+        return callbackFlow<Connectivity> {
             networkCallback = object : NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     offer(Connectivity.create(context))
