@@ -1,5 +1,7 @@
 # FlowReactiveNetwork on Coroutines
 [![Download](https://api.bintray.com/packages/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/images/download.svg) ](https://bintray.com/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/_latestVersion)
+[![Kotlin Version](https://img.shields.io/badge/Kotlin-1.4.10-blue.svg)](https://kotlinlang.org)
+
 [![kotlinweekly](https://img.shields.io/badge/kotlinweekly.net-204-blue.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-204)
 ![CI](https://github.com/AndreySBer/FlowReactiveNetwork/workflows/Android%20CI/badge.svg)
 
