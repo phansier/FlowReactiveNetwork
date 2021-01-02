@@ -3,6 +3,7 @@ package ru.beryukhov.reactivenetwork
 
 import android.content.Context
 import android.net.NetworkInfo
+import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -14,7 +15,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingSettings.Companion.builder
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
@@ -55,7 +55,7 @@ class ReactiveNetworkTest: BaseFlowTest() {
     }
 
     private fun networkConnectivityObservableShouldNotBeNull() { // given
-        val context: Context = RuntimeEnvironment.application
+        val context: Context = ApplicationProvider.getApplicationContext()
         // when
         val observable = ReactiveNetwork().observeNetworkConnectivity(context)
         // then
@@ -64,7 +64,7 @@ class ReactiveNetworkTest: BaseFlowTest() {
 
     @Test
     fun observeNetworkConnectivityWithStrategyShouldNotBeNull() { // given
-        val context: Context = RuntimeEnvironment.application
+        val context: Context = ApplicationProvider.getApplicationContext()
         val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
         // when
         val observable = ReactiveNetwork().observeNetworkConnectivity(context, strategy)
@@ -84,7 +84,7 @@ class ReactiveNetworkTest: BaseFlowTest() {
     fun observeNetworkConnectivityShouldBeConnectedOnStartWhenNetworkIsAvailable() {
         runBlocking {
             // given
-            val context = RuntimeEnvironment.application
+            val context = ApplicationProvider.getApplicationContext<Context>()
             // when
             val connectivityFlow = ReactiveNetwork().observeNetworkConnectivity(context).map { it.state }
             // then

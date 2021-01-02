@@ -9,6 +9,7 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.PowerManager
+import androidx.test.core.app.ApplicationProvider
 import at.florianschuster.test.flow.*
 import com.google.common.truth.Truth
 import io.mockk.every
@@ -24,7 +25,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.Connectivity
 
@@ -46,12 +46,12 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Before
     fun setUp() {
-        context = spyk(RuntimeEnvironment.application.applicationContext)
+        context = spyk(ApplicationProvider.getApplicationContext<Context>())
     }
 
     @Test
     fun shouldObserveConnectivity() { // given
-        val context = RuntimeEnvironment.application.applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         // when
 
         val testFlow = strategy.observeNetworkConnectivity(context).map { it.state }

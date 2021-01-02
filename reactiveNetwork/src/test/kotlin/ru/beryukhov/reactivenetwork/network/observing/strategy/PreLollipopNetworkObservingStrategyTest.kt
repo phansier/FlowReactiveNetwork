@@ -3,6 +3,7 @@ package ru.beryukhov.reactivenetwork.network.observing.strategy
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.net.NetworkInfo
+import androidx.test.core.app.ApplicationProvider
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
@@ -18,7 +19,6 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 
 // We are suppressing PMD here because we want static imports in unit tests
@@ -31,7 +31,7 @@ open class PreLollipopNetworkObservingStrategyTest {
     @Test
     fun shouldObserveConnectivity() { // given
         val strategy: NetworkObservingStrategy = PreLollipopNetworkObservingStrategy()
-        val context = RuntimeEnvironment.application.applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         // when
         runBlockingTest {
             val testFlow =
@@ -47,8 +47,7 @@ open class PreLollipopNetworkObservingStrategyTest {
     /*@Test
     fun shouldStopObservingConnectivity() { // given
         val strategy: NetworkObservingStrategy = PreLollipopNetworkObservingStrategy()
-        val context =
-            RuntimeEnvironment.application.applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val observable: Observable<Connectivity> = strategy.observeNetworkConnectivity(context)
         val observer: TestObserver<Connectivity> = TestObserver()
         // when
@@ -72,7 +71,7 @@ open class PreLollipopNetworkObservingStrategyTest {
     @Test
     fun shouldTryToUnregisterReceiver() { // given
         val strategy = PreLollipopNetworkObservingStrategy()
-        val context = spyk(RuntimeEnvironment.application)
+        val context = spyk(ApplicationProvider.getApplicationContext())
         val broadcastReceiver = mockk<BroadcastReceiver>(relaxed = true)
         // when
         strategy.tryToUnregisterReceiver(context, broadcastReceiver)
@@ -83,7 +82,7 @@ open class PreLollipopNetworkObservingStrategyTest {
     @Ignore
     @Test
     fun shouldTryToUnregisterReceiverAfterDispose() { // given
-        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<Context>()
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val strategy = spyk(PreLollipopNetworkObservingStrategy())
         // when
         runBlockingTest {

@@ -1,13 +1,14 @@
 package ru.beryukhov.reactivenetwork
 
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.NetworkInfo.DetailedState
+import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.Connectivity.Companion.create
 import ru.beryukhov.reactivenetwork.ConnectivityPredicate.appendUnknownNetworkTypeToTypes
 import ru.beryukhov.reactivenetwork.ConnectivityPredicate.hasState
@@ -252,8 +253,7 @@ class ConnectivityTest {
 
     @Test
     fun shouldCreateDefaultConnectivityWhenConnectivityManagerIsNull() { // given
-        val context =
-            RuntimeEnvironment.application.applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val connectivityManager: ConnectivityManager? = null
         // when
         val connectivity = create(context, connectivityManager)
