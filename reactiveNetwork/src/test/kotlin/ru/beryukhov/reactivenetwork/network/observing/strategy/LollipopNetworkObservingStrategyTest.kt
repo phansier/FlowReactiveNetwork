@@ -1,6 +1,8 @@
 package ru.beryukhov.reactivenetwork.network.observing.strategy
 
+import android.content.Context
 import android.net.NetworkInfo
+import androidx.test.core.app.ApplicationProvider
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
@@ -12,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 
@@ -24,7 +25,7 @@ class LollipopNetworkObservingStrategyTest : BaseFlowTest() {
     @Test
     fun shouldObserveConnectivity() { // given
         val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
-        val context = RuntimeEnvironment.application.applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         // when
 
         val testFlow = strategy.observeNetworkConnectivity(context).map { it.state }
@@ -38,7 +39,7 @@ class LollipopNetworkObservingStrategyTest : BaseFlowTest() {
     /*@Test
     fun shouldStopObservingConnectivity() { // given
         val strategy: NetworkObservingStrategy = LollipopNetworkObservingStrategy()
-        val context = RuntimeEnvironment.application
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val observable: Observable<Connectivity> = strategy.observeNetworkConnectivity(context)
         val observer: TestObserver<Connectivity> = TestObserver()
         // when

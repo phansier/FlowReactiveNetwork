@@ -1,6 +1,8 @@
 package ru.beryukhov.reactivenetwork.network.observing
 
+import android.content.Context
 import android.net.NetworkInfo
+import androidx.test.core.app.ApplicationProvider
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
@@ -11,7 +13,6 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import ru.beryukhov.reactivenetwork.BaseFlowTest
 import ru.beryukhov.reactivenetwork.network.observing.strategy.LollipopNetworkObservingStrategy
 import ru.beryukhov.reactivenetwork.network.observing.strategy.PreLollipopNetworkObservingStrategy
@@ -36,7 +37,7 @@ class NetworkObservingStrategyTest: BaseFlowTest() {
     }
 
     private fun assertThatIsConnected(strategy: NetworkObservingStrategy) { // given
-        val context = RuntimeEnvironment.application.applicationContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         //when
 
             val testFlow = strategy.observeNetworkConnectivity(context).map { it.state }.testIn(scope = testScopeRule)
