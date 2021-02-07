@@ -46,7 +46,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
     @Before
     fun setUp() {
-        context = spyk(ApplicationProvider.getApplicationContext<Context>())
+        context = spyk(ApplicationProvider.getApplicationContext())
     }
 
     @Test

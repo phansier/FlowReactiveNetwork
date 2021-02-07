@@ -1,5 +1,5 @@
 buildscript {
-    val kotlin_version by extra("1.4.21")
+    val kotlin_version by extra("1.4.30")
     val coroutines_version by extra("1.4.2")
     val robolectric_version by extra("4.4")
 
