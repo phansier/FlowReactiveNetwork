@@ -1,3 +1,4 @@
 include ':sample'
 include ':reactiveNetwork'
+include ':common'
 rootProject.name = "FlowReactiveNetwork"

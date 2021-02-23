@@ -41,7 +41,6 @@ android {
         val coroutines_version = rootProject.extra["coroutines_version"]
         val robolectric_version = rootProject.extra["robolectric_version"]
 
-        implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
