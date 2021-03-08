@@ -13,10 +13,13 @@ struct ContentView: View {
         // Text(greet())
         Text(self.viewModel.isNetwotkAvailable ? "HAS NETWORK" : "NO INTERNET")
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
+    
     static var previews: some View {
         ContentView()
     }
+    
 }

@@ -14,7 +14,9 @@ final class ContentViewModel: ObservableObject {
 extension ContentViewModel: NetworkMonitorDelegate {
     
     func networkAvailablilityStatusChanged(isAvailable: Bool) {
-        self.isNetwotkAvailable = isAvailable
+        DispatchQueue.main.async { [weak self] in
+            self?.isNetwotkAvailable = isAvailable
+        }
     }
     
 }
