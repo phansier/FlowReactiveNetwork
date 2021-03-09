@@ -17,6 +17,8 @@
 		7555FFA1242A565B00829871 /* iosAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FFA0242A565B00829871 /* iosAppUITests.swift */; };
 		7555FFB2242A642300829871 /* common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* common.framework */; };
 		7555FFB3242A642300829871 /* common.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* common.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A32ECB5925F67AE5007F304A /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32ECB5825F67AE5007F304A /* NetworkMonitor.swift */; };
+		A32ECB5D25F6845F007F304A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32ECB5C25F6845F007F304A /* ContentViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,8 @@
 		7555FFA0242A565B00829871 /* iosAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosAppUITests.swift; sourceTree = "<group>"; };
 		7555FFA2242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7555FFB1242A642300829871 /* common.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = common.framework; path = "../common/build/xcode-frameworks/common.framework"; sourceTree = "<group>"; };
+		A32ECB5825F67AE5007F304A /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		A32ECB5C25F6845F007F304A /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +129,8 @@
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				7555FF86242A565B00829871 /* Preview Content */,
+				A32ECB5825F67AE5007F304A /* NetworkMonitor.swift */,
+				A32ECB5C25F6845F007F304A /* ContentViewModel.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -317,8 +323,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
+				A32ECB5925F67AE5007F304A /* NetworkMonitor.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				A32ECB5D25F6845F007F304A /* ContentViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
