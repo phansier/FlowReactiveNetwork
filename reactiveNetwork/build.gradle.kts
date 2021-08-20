@@ -61,4 +61,5 @@ android {
 
 }
 
-apply {from("../deploy.gradle")}
+apply {from("${rootProject.projectDir}/scripts/publish-root.gradle")}
+apply {from("${rootProject.projectDir}/scripts/publish-module.gradle")}

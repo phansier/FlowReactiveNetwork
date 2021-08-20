@@ -1,0 +1,84 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+ext {
+    PUBLISH_GROUP_ID = 'ru.beryukhov'
+    PUBLISH_VERSION = '1.0.3'
+    PUBLISH_ARTIFACT_ID = 'flowreactivenetwork'
+}
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
+        // For Android libraries
+        from android.sourceSets.main.java.srcDirs
+        from android.sourceSets.main.kotlin.srcDirs
+    } else {
+        // For pure Kotlin libraries, in case you have them
+        from sourceSets.main.java.srcDirs
+        from sourceSets.main.kotlin.srcDirs
+    }
+}
+
+artifacts {
+    archives androidSourcesJar
+}
+
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+
+                // Two artifacts, the `aar` (or `jar`) and the sources
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    from components.java
+                }
+
+                artifact androidSourcesJar
+                //artifact javadocJar
+
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = 'Android library listening network connection state and Internet connectivity with Coroutines Flow'
+                    url = 'https://github.com/phansier/FlowReactiveNetwork'
+                    licenses {
+                        license {
+                            name = 'Apache-2.0 License'
+                            url = 'https://github.com/phansier/FlowReactiveNetwork/blob/master/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'phansier'
+                            name = 'Andrey Beryukhov'
+                            email = 'beryukhov-andrey@yandex.ru'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:github.com/phansier/FlowReactiveNetwork.git'
+                        developerConnection = 'scm:git:ssh://github.com/phansier/FlowReactiveNetwork.git'
+                        url = 'https://github.com/phansier/FlowReactiveNetwork/tree/main'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            //todo refine use of ext here
+            "rootProject.ext[\"signing.keyId\"]",
+            "rootProject.ext[\"signing.key\"]",
+            "rootProject.ext[\"signing.password\"]",
+    )
+    sign publishing.publications
+}
