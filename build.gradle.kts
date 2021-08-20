@@ -5,21 +5,24 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.2")
+        classpath("com.android.tools.build:gradle:4.1.3")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
     }
 }
 
 allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
-        maven(url = "https://dl.bintray.com/andreyberyukhov/FlowReactiveNetwork")
     }
+}
+
+plugins {
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 task<Delete>("clean") {

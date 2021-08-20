@@ -1,5 +1,5 @@
 # FlowReactiveNetwork on Coroutines
-[![Download](https://api.bintray.com/packages/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/images/download.svg) ](https://bintray.com/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/_latestVersion)
+[![Download](https://api.bintray.com/packages/andreyberyukhov/FlowReactiveNetwork/FlowReactiveNetwork/images/download.svg) ](https://repo1.maven.org/maven2/ru/beryukhov/flowreactivenetwork/1.0.3/)
 [![Kotlin Version](https://img.shields.io/badge/Kotlin-1.4.30-blue.svg)](https://kotlinlang.org)
 
 [![kotlinweekly](https://img.shields.io/badge/kotlinweekly.net-204-blue.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-204)
@@ -22,13 +22,11 @@ You can depend on the library through Gradle:
 dependencies {
     implementation 'ru.beryukhov:flowreactivenetwork:1.0.2'
 }
-// as for the library is not available in jcenter yet
+// now the library is available in mavenCentral()
 allprojects {
     repositories {
         //...
-        maven {
-            url "https://dl.bintray.com/andreyberyukhov/FlowReactiveNetwork"
-        }
+        mavenCentral() // should probably be here already
     }
 }
 ```
