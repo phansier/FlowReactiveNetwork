@@ -5,18 +5,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.*
+import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
+import android.net.NetworkRequest
 import android.os.PowerManager
 import android.util.Log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
 import ru.beryukhov.reactivenetwork.Connectivity
 import ru.beryukhov.reactivenetwork.ReactiveNetwork
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
@@ -28,9 +31,8 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 @TargetApi(23)
 class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     // it has to be initialized in the Observable due to Context
-    private lateinit var networkCallback: NetworkCallback
-    private val connectivitySubject: BroadcastChannel<Connectivity> =
-        BroadcastChannel(Channel.CONFLATED)
+    private var networkCallback: NetworkCallback? = null
+    private var connectivitySubject: MutableStateFlow<Connectivity>? = null
     private val idleReceiver: BroadcastReceiver = createIdleBroadcastReceiver()
     private var lastConnectivity = Connectivity()
 
@@ -44,20 +46,14 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
             NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
                 .build()
-        manager.registerNetworkCallback(request, networkCallback)
-        return callbackFlow {
-            connectivitySubject.consumeEach {
-                trySend(it)
-                print("offer")
-                lastConnectivity = it
-            }
-            awaitClose {
-                tryToUnregisterCallback(manager)
-                tryToUnregisterReceiver(context)
-            }
-        }.flatMapConcat { connectivity ->
+        manager.registerNetworkCallback(request, networkCallback!!)
+        connectivitySubject = MutableStateFlow(Connectivity.create(context))
+        return connectivitySubject!!.flatMapConcat { connectivity ->
             propagateAnyConnectedState(lastConnectivity, connectivity)
-        }.onStart { emit(Connectivity.create(context)) }.distinctUntilChanged()
+        }.onCompletion {
+            tryToUnregisterCallback(manager)
+            tryToUnregisterReceiver(context)
+        }
     }
 
     internal fun propagateAnyConnectedState(
@@ -104,7 +100,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
 
     internal fun tryToUnregisterCallback(manager: ConnectivityManager?) {
         try {
-            manager?.unregisterNetworkCallback(networkCallback)
+            networkCallback?.let { manager?.unregisterNetworkCallback(it) }
         } catch (exception: Exception) {
             onError(
                 ERROR_MSG_NETWORK_CALLBACK,
@@ -141,7 +137,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     }
 
     internal fun onNext(connectivity: Connectivity) {
-        connectivitySubject.trySend(connectivity)
+        connectivitySubject?.tryEmit(connectivity)
     }
 
     companion object {
