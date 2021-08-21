@@ -1,14 +1,14 @@
 buildscript {
-    val kotlin_version by extra("1.4.30")
-    val coroutines_version by extra("1.4.2")
-    val robolectric_version by extra("4.4")
+    val kotlin_version by extra("1.5.20")
+    val coroutines_version by extra("1.5.1")
+    val robolectric_version by extra("4.6.1")
 
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.3")
+        classpath("com.android.tools.build:gradle:7.0.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
