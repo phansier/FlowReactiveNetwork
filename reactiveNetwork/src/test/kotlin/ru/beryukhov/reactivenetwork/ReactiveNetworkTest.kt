@@ -1,13 +1,9 @@
-
 package ru.beryukhov.reactivenetwork
 
 import android.content.Context
 import android.net.NetworkInfo
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -16,6 +12,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import ru.beryukhov.reactivenetwork.base.BaseFlowTest
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingSettings.Companion.builder
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
 import ru.beryukhov.reactivenetwork.internet.observing.error.DefaultErrorHandler
@@ -24,11 +21,8 @@ import ru.beryukhov.reactivenetwork.internet.observing.strategy.SocketInternetOb
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 import ru.beryukhov.reactivenetwork.network.observing.strategy.LollipopNetworkObservingStrategy
 
-@ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
-@FlowPreview
 @RunWith(RobolectricTestRunner::class)
-class ReactiveNetworkTest: BaseFlowTest() {
+class ReactiveNetworkTest : BaseFlowTest() {
     @Test
     fun testReactiveNetworkObjectShouldNotBeNull() { // given
         // when
@@ -86,7 +80,8 @@ class ReactiveNetworkTest: BaseFlowTest() {
             // given
             val context = ApplicationProvider.getApplicationContext<Context>()
             // when
-            val connectivityFlow = ReactiveNetwork().observeNetworkConnectivity(context).map { it.state }
+            val connectivityFlow =
+                ReactiveNetwork().observeNetworkConnectivity(context).map { it.state }
             // then
             connectivityFlow.expectFirst(NetworkInfo.State.CONNECTED)
         }

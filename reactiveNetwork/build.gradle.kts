@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion(29)
+    compileSdk = 29
     //testOptions { unitTests { includeAndroidResources = true } }
 
     defaultConfig {
-        minSdkVersion(14)
+        minSdk = 14
     }
     compileOptions {
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -36,6 +36,10 @@ android {
         explicitApi()
     }
 
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+    }
+
     dependencies {
         val kotlin_version = rootProject.extra["kotlin_version"]
         val coroutines_version = rootProject.extra["coroutines_version"]
@@ -53,9 +57,10 @@ android {
 
         testImplementation ("com.google.truth:truth:1.0.1")
         testImplementation ("org.robolectric:robolectric:$robolectric_version")
-        testImplementation ("io.mockk:mockk:1.10.4")
+        testImplementation ("io.mockk:mockk:1.12.0")
 
-        testImplementation ("at.florianschuster.test:coroutines-test-extensions:0.1.2")
+        testImplementation ("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+        testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
         testImplementation ("androidx.test:core:1.4.0")
     }
 

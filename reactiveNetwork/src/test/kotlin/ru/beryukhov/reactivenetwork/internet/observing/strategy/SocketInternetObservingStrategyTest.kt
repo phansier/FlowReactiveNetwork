@@ -1,29 +1,24 @@
 package ru.beryukhov.reactivenetwork.internet.observing.strategy
 
-import at.florianschuster.test.flow.emission
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-
 import org.robolectric.RobolectricTestRunner
-import ru.beryukhov.reactivenetwork.BaseFlowTest
+import ru.beryukhov.reactivenetwork.base.BaseFlowTest
+import ru.beryukhov.reactivenetwork.base.emission
+import ru.beryukhov.reactivenetwork.base.expect
+import ru.beryukhov.reactivenetwork.base.testIn
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
-import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Socket
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class SocketInternetObservingStrategyTest : BaseFlowTest() {
 

@@ -25,9 +25,6 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
  * Network observing strategy for devices with Android Marshmallow (API 23) or higher.
  * Uses Network Callback API and handles Doze mode.
  */
-@FlowPreview
-@ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
 @TargetApi(23)
 class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     // it has to be initialized in the Observable due to Context
@@ -37,6 +34,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     private val idleReceiver: BroadcastReceiver = createIdleBroadcastReceiver()
     private var lastConnectivity = Connectivity()
 
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val service = Context.CONNECTIVITY_SERVICE
         val manager = context.getSystemService(service) as ConnectivityManager

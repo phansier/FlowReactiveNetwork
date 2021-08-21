@@ -1,6 +1,9 @@
 package ru.beryukhov.reactivenetwork.internet.observing.strategy
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -8,10 +11,6 @@ import ru.beryukhov.reactivenetwork.Preconditions
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
 import ru.beryukhov.reactivenetwork.tickerFlow
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 /**
  * Walled Garden Strategy for monitoring connectivity with the Internet.
@@ -25,7 +24,6 @@ class WalledGardenInternetObservingStrategy : InternetObservingStrategy {
         return DEFAULT_HOST
     }
 
-    @ExperimentalCoroutinesApi
     override fun observeInternetConnectivity(
         initialIntervalInMs: Int,
         intervalInMs: Int, host: String, port: Int, timeoutInMs: Int,
@@ -42,13 +40,18 @@ class WalledGardenInternetObservingStrategy : InternetObservingStrategy {
         )
         checkGeneralPreconditions(host, port, timeoutInMs, httpResponse, errorHandler)
         val adjustedHost = adjustHost(host)
-        return tickerFlow(period = intervalInMs.toLong(), initialDelay = initialIntervalInMs.toLong()).map{isConnected(
-            adjustedHost,
-            port,
-            timeoutInMs,
-            httpResponse,
-            errorHandler
-        )}.distinctUntilChanged()
+        return tickerFlow(
+            period = intervalInMs.toLong(),
+            initialDelay = initialIntervalInMs.toLong()
+        ).map {
+            isConnected(
+                adjustedHost,
+                port,
+                timeoutInMs,
+                httpResponse,
+                errorHandler
+            )
+        }.distinctUntilChanged()
     }
 
     override suspend fun checkInternetConnectivity(
