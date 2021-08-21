@@ -29,7 +29,7 @@ class PreLollipopNetworkObservingStrategy : NetworkObservingStrategy {
                     context: Context,
                     intent: Intent
                 ) {
-                    offer(Connectivity.create(context))
+                    trySend(Connectivity.create(context))
                 }
             }
             context.registerReceiver(receiver, filter)

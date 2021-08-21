@@ -49,7 +49,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
         manager.registerNetworkCallback(request, networkCallback)
         return callbackFlow {
             connectivitySubject.consumeEach {
-                offer(it)
+                trySend(it)
                 print("offer")
                 lastConnectivity = it
             }
@@ -143,7 +143,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
     }
 
     internal fun onNext(connectivity: Connectivity) {
-        connectivitySubject.offer(connectivity)
+        connectivitySubject.trySend(connectivity)
     }
 
     companion object {

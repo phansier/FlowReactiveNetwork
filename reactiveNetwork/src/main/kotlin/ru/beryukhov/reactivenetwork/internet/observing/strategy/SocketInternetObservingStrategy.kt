@@ -135,8 +135,7 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
         timeoutInMs: Int,
         errorHandler: ErrorHandler
     ): Boolean {
-        val isConnected: Boolean
-        isConnected = try {
+        return try {
             socket.connect(InetSocketAddress(host, port), timeoutInMs)
             socket.isConnected
         } catch (e: IOException) {
@@ -148,7 +147,6 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
                 errorHandler.handleError(exception, "Could not close the socket")
             }
         }
-        return isConnected
     }
 
     companion object {

@@ -45,7 +45,7 @@ android {
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
-        implementation("androidx.annotation:annotation:1.1.0")
+        implementation("androidx.annotation:annotation:1.2.0")
 
 
         testImplementation ("org.jetbrains.kotlin:kotlin-test-common:$kotlin_version")
@@ -56,7 +56,7 @@ android {
         testImplementation ("io.mockk:mockk:1.10.4")
 
         testImplementation ("at.florianschuster.test:coroutines-test-extensions:0.1.2")
-        testImplementation ("androidx.test:core:1.3.0")
+        testImplementation ("androidx.test:core:1.4.0")
     }
 
 }

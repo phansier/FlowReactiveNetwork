@@ -29,7 +29,7 @@ internal fun tickerFlow(
 
     val timer = Timer()
     timer.schedule(initialDelay, period) {
-        offer(Unit)
+        trySend(Unit)
     }
 
     awaitClose { timer.cancel() }

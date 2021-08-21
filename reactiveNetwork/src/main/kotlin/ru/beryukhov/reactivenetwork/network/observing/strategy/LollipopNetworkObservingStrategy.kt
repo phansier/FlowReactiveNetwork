@@ -27,14 +27,14 @@ class LollipopNetworkObservingStrategy : NetworkObservingStrategy {
     override fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val service = Context.CONNECTIVITY_SERVICE
         val manager = context.getSystemService(service) as ConnectivityManager
-        return callbackFlow<Connectivity> {
+        return callbackFlow {
             networkCallback = object : NetworkCallback() {
                 override fun onAvailable(network: Network) {
-                    offer(Connectivity.create(context))
+                    trySend(Connectivity.create(context))
                 }
 
                 override fun onLost(network: Network) {
-                    offer(Connectivity.create(context))
+                    trySend(Connectivity.create(context))
                 }
             }
 
