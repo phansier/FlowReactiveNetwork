@@ -57,6 +57,7 @@ object Preconditions {
      *
      * @return boolean true if current Android version is Lollipop or higher
      */
+    @androidx.annotation.ChecksSdkIntAtLeast(api = Build.VERSION_CODES.LOLLIPOP)
     fun isAtLeastAndroidLollipop(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
     }
@@ -67,6 +68,7 @@ object Preconditions {
      *
      * @return boolean true if current Android version is Marshmallow or higher
      */
+    @androidx.annotation.ChecksSdkIntAtLeast(api = Build.VERSION_CODES.M)
     fun isAtLeastAndroidMarshmallow():Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     }

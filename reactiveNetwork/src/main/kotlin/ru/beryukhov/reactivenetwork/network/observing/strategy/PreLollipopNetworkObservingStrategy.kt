@@ -6,10 +6,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.util.Log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.beryukhov.reactivenetwork.Connectivity
 import ru.beryukhov.reactivenetwork.ReactiveNetwork
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
@@ -19,7 +23,7 @@ import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
  * Uses Broadcast Receiver.
  */
 class PreLollipopNetworkObservingStrategy : NetworkObservingStrategy {
-    @ExperimentalCoroutinesApi
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeNetworkConnectivity(context: Context): Flow<Connectivity> {
         val filter = IntentFilter()
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -29,7 +33,7 @@ class PreLollipopNetworkObservingStrategy : NetworkObservingStrategy {
                     context: Context,
                     intent: Intent
                 ) {
-                    offer(Connectivity.create(context))
+                    trySend(Connectivity.create(context))
                 }
             }
             context.registerReceiver(receiver, filter)

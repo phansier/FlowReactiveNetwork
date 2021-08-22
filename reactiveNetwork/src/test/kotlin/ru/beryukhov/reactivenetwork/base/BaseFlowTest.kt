@@ -1,6 +1,5 @@
-package ru.beryukhov.reactivenetwork
+package ru.beryukhov.reactivenetwork.base
 
-import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -11,11 +10,7 @@ abstract class BaseFlowTest(overrideMainDispatcher: Boolean = false) {
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule(overrideMainDispatcher)
 
-    /*@Before
-    fun setup() {
-    }
-
-    @After
+    /*@After
     fun cleanup() {
         testScopeRule.cleanupTestCoroutines()
     }*/

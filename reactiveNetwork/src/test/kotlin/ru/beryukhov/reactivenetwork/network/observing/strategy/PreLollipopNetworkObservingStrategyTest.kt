@@ -4,14 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.net.NetworkInfo
 import androidx.test.core.app.ApplicationProvider
-import at.florianschuster.test.flow.emission
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
@@ -19,14 +15,15 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import ru.beryukhov.reactivenetwork.base.emission
+import ru.beryukhov.reactivenetwork.base.expect
+import ru.beryukhov.reactivenetwork.base.testIn
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 
-// We are suppressing PMD here because we want static imports in unit tests
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 open class PreLollipopNetworkObservingStrategyTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Ignore
     @Test
     fun shouldObserveConnectivity() { // given
@@ -79,6 +76,7 @@ open class PreLollipopNetworkObservingStrategyTest {
         verify { context.unregisterReceiver(broadcastReceiver) }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Ignore
     @Test
     fun shouldTryToUnregisterReceiverAfterDispose() { // given

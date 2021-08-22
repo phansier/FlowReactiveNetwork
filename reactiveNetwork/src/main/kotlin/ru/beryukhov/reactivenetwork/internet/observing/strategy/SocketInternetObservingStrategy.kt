@@ -1,6 +1,8 @@
 package ru.beryukhov.reactivenetwork.internet.observing.strategy
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -8,9 +10,6 @@ import ru.beryukhov.reactivenetwork.Preconditions
 import ru.beryukhov.reactivenetwork.internet.observing.InternetObservingStrategy
 import ru.beryukhov.reactivenetwork.internet.observing.error.ErrorHandler
 import ru.beryukhov.reactivenetwork.tickerFlow
-import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Socket
 
 /**
  * Socket strategy for monitoring connectivity with the Internet.
@@ -21,7 +20,6 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
         return DEFAULT_HOST
     }
 
-    @ExperimentalCoroutinesApi
     override fun observeInternetConnectivity(
         initialIntervalInMs: Int,
         intervalInMs: Int,
@@ -135,8 +133,7 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
         timeoutInMs: Int,
         errorHandler: ErrorHandler
     ): Boolean {
-        val isConnected: Boolean
-        isConnected = try {
+        return try {
             socket.connect(InetSocketAddress(host, port), timeoutInMs)
             socket.isConnected
         } catch (e: IOException) {
@@ -148,7 +145,6 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
                 errorHandler.handleError(exception, "Could not close the socket")
             }
         }
-        return isConnected
     }
 
     companion object {

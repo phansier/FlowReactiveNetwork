@@ -3,22 +3,18 @@ package ru.beryukhov.reactivenetwork.network.observing.strategy
 import android.content.Context
 import android.net.NetworkInfo
 import androidx.test.core.app.ApplicationProvider
-import at.florianschuster.test.flow.emission
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
+import ru.beryukhov.reactivenetwork.base.emission
+import ru.beryukhov.reactivenetwork.base.expect
+import ru.beryukhov.reactivenetwork.base.testIn
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.map
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import ru.beryukhov.reactivenetwork.BaseFlowTest
+import ru.beryukhov.reactivenetwork.base.BaseFlowTest
 import ru.beryukhov.reactivenetwork.network.observing.NetworkObservingStrategy
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class LollipopNetworkObservingStrategyTest : BaseFlowTest() {
 

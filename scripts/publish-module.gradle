@@ -3,7 +3,7 @@ apply plugin: 'signing'
 
 ext {
     PUBLISH_GROUP_ID = 'ru.beryukhov'
-    PUBLISH_VERSION = '1.0.3'
+    PUBLISH_VERSION = '1.0.4'
     PUBLISH_ARTIFACT_ID = 'flowreactivenetwork'
 }
 

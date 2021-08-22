@@ -10,13 +10,13 @@ import android.net.NetworkInfo
 import android.os.Build
 import android.os.PowerManager
 import androidx.test.core.app.ApplicationProvider
-import at.florianschuster.test.flow.*
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -25,12 +25,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-import ru.beryukhov.reactivenetwork.BaseFlowTest
+import ru.beryukhov.reactivenetwork.base.BaseFlowTest
 import ru.beryukhov.reactivenetwork.Connectivity
+import ru.beryukhov.reactivenetwork.base.emission
+import ru.beryukhov.reactivenetwork.base.emissionCount
+import ru.beryukhov.reactivenetwork.base.emissions
+import ru.beryukhov.reactivenetwork.base.expect
+import ru.beryukhov.reactivenetwork.base.testIn
 
-@ObsoleteCoroutinesApi
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
 
@@ -80,6 +82,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         verify(exactly = 1) { strategy.onError(message, exception) }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Ignore
     @Test
     fun shouldTryToUnregisterCallbackOnDispose() { // given
@@ -93,6 +96,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Ignore
     @Test
     fun shouldTryToUnregisterReceiverOnDispose() { // given
@@ -273,6 +277,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun shouldNotPropagateLastConnectivityEventWhenTypeIsNotChanged() { // given
         val last = Connectivity(
@@ -295,6 +300,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun shouldNotPropagateLastConnectivityWhenWasNotConnected() { // given
         val last = Connectivity(
@@ -317,6 +323,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun shouldNotPropagateLastConnectivityWhenIsConnected() { // given
         val last = Connectivity(
@@ -339,6 +346,7 @@ open class MarshmallowNetworkObservingStrategyTest : BaseFlowTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun shouldNotPropagateLastConnectivityWhenIsIdle() { // given
         val last = Connectivity(

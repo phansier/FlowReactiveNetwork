@@ -1,6 +1,6 @@
 # FlowReactiveNetwork on Coroutines
-[![Download](https://img.shields.io/maven-central/v/ru.beryukhov/flowreactivenetwork?versionPrefix=1.0.3) ](https://repo1.maven.org/maven2/ru/beryukhov/flowreactivenetwork/1.0.3/)
-[![Kotlin Version](https://img.shields.io/badge/Kotlin-1.4.30-blue.svg)](https://kotlinlang.org)
+[![Download](https://img.shields.io/maven-central/v/ru.beryukhov/flowreactivenetwork?versionPrefix=1.0.4) ](https://repo1.maven.org/maven2/ru/beryukhov/flowreactivenetwork/1.0.4/)
+[![Kotlin Version](https://img.shields.io/badge/Kotlin-1.5.20-blue.svg)](https://kotlinlang.org)
 
 [![kotlinweekly](https://img.shields.io/badge/kotlinweekly.net-204-blue.svg)](https://mailchi.mp/kotlinweekly/kotlin-weekly-204)
 ![CI](https://github.com/AndreySBer/FlowReactiveNetwork/workflows/Android%20CI/badge.svg)
@@ -20,7 +20,7 @@ You can depend on the library through Gradle:
 
 ```groovy
 dependencies {
-    implementation 'ru.beryukhov:flowreactivenetwork:1.0.3'
+    implementation 'ru.beryukhov:flowreactivenetwork:1.0.4'
 }
 // now the library is available in mavenCentral()
 allprojects {
