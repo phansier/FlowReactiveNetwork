@@ -40,7 +40,7 @@ dependencies {
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.0")
 
-    implementation("ru.beryukhov:flowreactivenetwork:1.0.3")
+    implementation("ru.beryukhov:flowreactivenetwork:1.0.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.extra["coroutines_version"]}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${rootProject.extra["coroutines_version"]}")
 
